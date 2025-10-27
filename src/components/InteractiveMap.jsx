@@ -19,6 +19,7 @@ export default function InteractiveMap() {
         const el = svg.querySelector(`#${CSS.escape(id)}`);
         if (!el) return;
         el.style.cursor = "pointer";
+
         el.addEventListener("mouseenter", () => setHovered(key));
         el.addEventListener("mouseleave", () => setHovered(null));
         el.addEventListener("click", (e) => {
@@ -33,12 +34,10 @@ export default function InteractiveMap() {
     };
     document.addEventListener("click", handleOutsideClick);
 
-    return () => {
-      document.removeEventListener("click", handleOutsideClick);
-    };
+    return () => document.removeEventListener("click", handleOutsideClick);
   }, []);
 
-  // Hover/klik efekti
+  // Hover / klik efekti
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -68,24 +67,41 @@ export default function InteractiveMap() {
   }, [activeSegment, hovered]);
 
   return (
-    <div className="relative w-full h-screen bg-gray-100 flex flex-col">
-      <header className="flex justify-between items-center p-4 bg-white shadow">
-        <h1 className="font-semibold text-lg text-gray-800">Monteput</h1>
+    <div className="w-screen h-screen flex flex-col bg-gray-100 overflow-hidden">
+      {/* 🔹 HEADER */}
+      <header className="fixed top-0 left-0 w-full bg-white shadow z-50 flex items-center justify-between px-6 md:px-10 py-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+          Monteput
+        </h1>
+        <div className="flex gap-2">
+          <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100">
+            Srpski
+          </button>
+          <button className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-100">
+            English
+          </button>
+        </div>
       </header>
 
-      <div className="flex-1 relative overflow-hidden">
-        <svg
-          ref={svgRef}
-          viewBox="0 0 4152.48 3650.22"
-          className="w-full h-full transition-transform duration-500 ease-in-out"
-          style={{
-            transform: activeSegment ? "scale(1.1)" : "scale(1)",
-            transformOrigin: "center",
-          }}
-        >
-          <MyMapSVG />
-        </svg>
+      {/* 🔹 Mapa */}
+      <main className="flex-1 relative mt-[56px] md:mt-[64px] flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center px-2 md:px-8">
+          <svg
+            ref={svgRef}
+            viewBox="0 0 4152.48 3650.22"
+            className="w-full h-auto max-w-[90vw] max-h-[80vh]"
+            preserveAspectRatio="xMidYMid meet"
+            style={{
+              transform: activeSegment ? "scale(1.02)" : "scale(1)",
+              transformOrigin: "center",
+              transition: "transform 0.4s ease",
+            }}
+          >
+            <MyMapSVG />
+          </svg>
+        </div>
 
+        {/* Hover label */}
         <AnimatePresence>
           {hovered && (
             <motion.div
@@ -106,13 +122,14 @@ export default function InteractiveMap() {
           )}
         </AnimatePresence>
 
+        {/* Popup */}
         {activeSegment && (
           <SegmentPopup
             segmentKey={activeSegment}
             onClose={() => setActiveSegment(null)}
           />
         )}
-      </div>
+      </main>
     </div>
   );
 }
