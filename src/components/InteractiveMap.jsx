@@ -88,19 +88,15 @@ export default function InteractiveMap() {
       {/* 🔹 Sekcija mape (ispod headera) */}
 <main className="flex-1 mt-[64px] relative flex items-center justify-center">
   <div className="relative w-full h-[calc(100vh-64px)] flex items-center justify-center">
-    <svg
-      ref={svgRef}
-      viewBox="0 0 4152.48 3650.22"
-      className="w-full h-full object-contain"
-      preserveAspectRatio="xMidYMid meet"
-      style={{
-        transform: activeSegment ? "scale(1.02)" : "scale(1)",
-        transformOrigin: "center",
-        transition: "transform 0.4s ease",
-      }}
-    >
-      <MyMapSVG />
-    </svg>
+<svg
+  ref={svgRef}
+  viewBox="0 0 1920 1280"  // 👈 ovo MORA postojati
+  className="w-full h-full object-contain"
+  preserveAspectRatio="xMidYMid meet"
+>
+  <MyMapSVG />
+</svg>
+
 
     {/* Hover label */}
     <AnimatePresence>
