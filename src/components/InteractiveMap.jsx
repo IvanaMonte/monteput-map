@@ -132,7 +132,7 @@ export default function InteractiveMap() {
     )}
 
     {/* ✅ QR kod */}
-    <QrCodeBox url="https://monteput.me/mapa" />
+    <QrCodeBox url="https://monteput-silk.vercel.app/" />
   </div>
 </main>
 
