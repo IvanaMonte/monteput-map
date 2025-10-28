@@ -3,7 +3,8 @@ import InteractiveMap from "./components/InteractiveMap";
 
 export default function App() {
   return (
-    <div className="w-screen h-screen bg-gray-100">
+       <div className="w-full h-full">
+
       <InteractiveMap />
     </div>
   );

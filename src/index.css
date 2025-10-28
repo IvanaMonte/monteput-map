@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
-  height: 100%;
+#root {
   margin: 0;
   padding: 0;
+  max-width: none;
+  width: 100%;
+}
+
+svg path,
+svg polyline,
+svg line,
+svg rect {
+  pointer-events: all !important;
 }
