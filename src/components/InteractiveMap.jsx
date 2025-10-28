@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import MyMapSVG from "../assets/map.svg?react";
 import { SEGMENT_IDS, TABLE_DATA } from "../data/svgMapData";
 import SegmentPopup from "./SegmentPopup";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import QrCodeBox from "./QrCodeBox";
 import montePutLogo from "../assets/monteput-logo.svg";
 
