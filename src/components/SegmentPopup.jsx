@@ -15,7 +15,7 @@ const SegmentPopup = ({ segmentKey, onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 md:bg-transparent md:inset-auto md:absolute md:top-20 md:right-6"
+      className="popup-container fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 md:bg-transparent md:inset-auto md:absolute md:top-20 md:right-6"
       onClick={onClose}
     >
       <div

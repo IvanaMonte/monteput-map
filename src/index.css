@@ -12,6 +12,8 @@
 svg path,
 svg polyline,
 svg line,
-svg rect {
+svg * {
   pointer-events: all !important;
+    cursor: pointer;
+    transition: filter 0.6s ease, opacity 0.6s ease, stroke-width 0.6s ease; /* sporije i glađe */
 }

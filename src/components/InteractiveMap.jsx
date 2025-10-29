@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import QrCodeBox from "./QrCodeBox";
 import montePutLogo from "../assets/monteput-logo.svg";
 
-// ===== InteractiveMap (bez react-svg-pan-zoom) =====
 export default function InteractiveMap() {
   const [activeSegment, setActiveSegment] = useState(null);
   const [hovered, setHovered] = useState(null);
@@ -28,10 +27,13 @@ export default function InteractiveMap() {
     const svg = svgRef.current;
     if (!svg) return;
 
+    const listeners = [];
+
     Object.entries(SEGMENT_IDS).forEach(([key, ids]) => {
       ids.forEach((id) => {
         const el = svg.querySelector(`#${CSS.escape(id)}`);
         if (!el) return;
+
         el.style.cursor = "pointer";
 
         const onEnter = () => setHovered(key);
@@ -44,8 +46,19 @@ export default function InteractiveMap() {
         el.addEventListener("mouseenter", onEnter);
         el.addEventListener("mouseleave", onLeave);
         el.addEventListener("click", onClick);
+
+        listeners.push({ el, onEnter, onLeave, onClick });
       });
     });
+
+    // 🔁 Clean-up — sprečava gubljenje klikova i višestruke evente
+    return () => {
+      listeners.forEach(({ el, onEnter, onLeave, onClick }) => {
+        el.removeEventListener("mouseenter", onEnter);
+        el.removeEventListener("mouseleave", onLeave);
+        el.removeEventListener("click", onClick);
+      });
+    };
   }, []);
 
   // === Hover efekti (posvijetli aktivni, potamni ostale) ===
@@ -58,24 +71,35 @@ export default function InteractiveMap() {
         const el = svg.querySelector(`#${CSS.escape(id)}`);
         if (!el) return;
 
-        if (activeSegment) {
-          el.style.filter =
-            key === activeSegment ? "brightness(1.4)" : "brightness(0.5)";
-          el.style.strokeWidth = key === activeSegment ? "6px" : "2px";
-        } else if (hovered === key) {
-          el.style.filter = "brightness(1.2)";
-          el.style.strokeWidth = "4px";
-        } else {
-          el.style.filter = "";
-          el.style.strokeWidth = "";
-        }
+if (activeSegment) {
+  if (key === activeSegment) {
+    // ✅ Aktivni segment - lagano posvijetli, zadrži boju
+    el.style.filter = "brightness(1.3)";
+    el.style.opacity = "1";
+    el.style.strokeWidth = "6px";
+  } else {
+    // ❌ Ostali segmenti - zatamni, deluju "disabled"
+    el.style.filter = "brightness(0.4)";
+    el.style.opacity = "0.5";
+    el.style.strokeWidth = "2px";
+  }
+} else if (hovered === key) {
+  // 🟡 Hover (kad ništa nije aktivno)
+  el.style.filter = "brightness(1.2)";
+  el.style.opacity = "1";
+  el.style.strokeWidth = "4px";
+} else {
+  // 🔵 Normalno stanje
+  el.style.filter = "";
+  el.style.opacity = "1";
+  el.style.strokeWidth = "2px";
+}
       });
     });
   }, [activeSegment, hovered]);
 
   // === Zoom (točkić) ===
   const handleWheel = (e) => {
-    //  e.preventDefault();
     const scale = e.deltaY < 0 ? 1.1 : 0.9;
     setZoom((prev) => {
       const next = prev * scale;
@@ -108,6 +132,32 @@ export default function InteractiveMap() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+        // === Zatvaranje popup-a klikom van segmenta ===
+   useEffect(() => {
+        const handleOutsideClick = (e) => {
+          // ako nema aktivnog popup-a, ništa ne radi
+          if (!activeSegment) return;
+
+          // ako je kliknut unutar popup-a ili QR kutije — ignoriši
+          const popup = document.querySelector(".popup-container");
+          if (popup && popup.contains(e.target)) return;
+
+          // ako je kliknut unutar SVG segmenta — ignoriši (da se ne zatvori odmah)
+          const svg = svgRef.current;
+          if (svg && svg.contains(e.target)) {
+            const clickedSegment = Object.values(SEGMENT_IDS)
+              .flat()
+              .some((id) => e.target.closest(`#${CSS.escape(id)}`));
+            if (clickedSegment) return;
+          }
+
+          // inače, zatvori popup
+          setActiveSegment(null);
+        };
+
+        document.addEventListener("click", handleOutsideClick);
+        return () => document.removeEventListener("click", handleOutsideClick);
+      }, [activeSegment]);
 
   return (
     <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
@@ -115,32 +165,31 @@ export default function InteractiveMap() {
       <header className="fixed top-0 left-0 w-full h-[50px] sm:h-[80px] md:h-[60px] bg-white shadow z-50 flex items-center justify-between px-4 sm:px-6 md:px-12">
         <img src={montePutLogo} alt="Monteput Logo" className="h-8 md:h-10" />
         <div className="relative flex items-center">
-          {/* Toggle Switch Jezik */}
           <div className="relative bg-gray-200 rounded-full p-1 flex items-center cursor-pointer transition-all duration-300 hover:bg-gray-300">
-            {/* Background Slider */}
             <div
-              className={`absolute top-1 bottom-1 bg-gray-400 rounded-full transition-all duration-300 ease-in-out shadow-sm ${selectedLanguage === "Crnogorski"
-                ? "left-1 w-[calc(60%-4px)]"
-                : "right-1 w-[calc(45%-4px)]"
-                }`}
+              className={`absolute top-1 bottom-1 bg-gray-400 rounded-full transition-all duration-300 ease-in-out shadow-sm ${
+                selectedLanguage === "Crnogorski"
+                  ? "left-1 w-[calc(60%-4px)]"
+                  : "right-1 w-[calc(45%-4px)]"
+              }`}
             />
-
-            {/* Jezik toggle button */}
             <button
               onClick={() => setSelectedLanguage("Crnogorski")}
-              className={`relative z-10 px-1 py-0.5 sm:px-1.5 sm:py-1 md:px-2 md:py-1 text-xs sm:text-xs md:text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${selectedLanguage === "Crnogorski"
-                ? "text-white"
-                : "text-gray-700 hover:text-gray-900"
-                }`}
+              className={`relative z-10 px-1 py-0.5 sm:px-1.5 sm:py-1 md:px-2 md:py-1 text-xs sm:text-xs md:text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${
+                selectedLanguage === "Crnogorski"
+                  ? "text-white"
+                  : "text-gray-700 hover:text-gray-900"
+              }`}
             >
               Crnogorski
             </button>
             <button
               onClick={() => setSelectedLanguage("English")}
-              className={`relative z-10 px-1 py-0.5 sm:px-1.5 sm:py-1 md:px-2 md:py-1 text-xs sm:text-xs md:text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${selectedLanguage === "English"
-                ? "text-white"
-                : "text-gray-700 hover:text-gray-900"
-                }`}
+              className={`relative z-10 px-1 py-0.5 sm:px-1.5 sm:py-1 md:px-2 md:py-1 text-xs sm:text-xs md:text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${
+                selectedLanguage === "English"
+                  ? "text-white"
+                  : "text-gray-700 hover:text-gray-900"
+              }`}
             >
               English
             </button>
@@ -153,7 +202,21 @@ export default function InteractiveMap() {
         className="flex-1 mt-[70px] sm:mt-[80px] md:mt-[100px] flex items-center justify-center overflow-hidden"
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
+          onMouseMove={(e) => {
+    // === Pan kontrola ===
+    if (isPanning) {
+      const dx = e.clientX - lastMousePos.x;
+      const dy = e.clientY - lastMousePos.y;
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setLastMousePos({ x: e.clientX, y: e.clientY });
+      return; // ako panujemo, ne treba tooltip
+    }
+
+    // === Tooltip praćenje ===
+    const rect = e.currentTarget.getBoundingClientRect();
+    document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+    document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+  }}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
@@ -195,7 +258,6 @@ export default function InteractiveMap() {
             )}
           </AnimatePresence>
 
-
           {/* Popup */}
           {activeSegment && (
             <SegmentPopup
@@ -204,7 +266,7 @@ export default function InteractiveMap() {
             />
           )}
 
-          {/* QR kod u donjem desnom uglu - sakriven na mobilnom*/}
+          {/* QR kod */}
           <div className="absolute bottom-6 right-6 z-50 hidden md:block">
             <QrCodeBox url="https://monteput-silk.vercel.app/" />
           </div>
