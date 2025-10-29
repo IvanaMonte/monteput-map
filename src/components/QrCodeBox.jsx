@@ -16,8 +16,8 @@ const QrCodeBox = ({ url }) => {
         zIndex: 100,
       }}
     >
-      <QRCodeCanvas value={url} size={150} level="H" includeMargin={true} />
-      <p style={{ fontSize: 14, marginTop: 8, fontWeight: 500, color: '#4B5563' }}>Skeniraj za mapu</p>
+      <QRCodeCanvas value={url} size={120} level="H" />
+      {/* <p style={{ fontSize: 14, marginTop: 8, fontWeight: 500, color: '#4B5563' }}>Skeniraj za mapu</p> */}
     </div>
   );
 };

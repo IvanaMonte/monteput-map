@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import MyMapSVG from "../assets/map.svg?react";
+import MyMapSVG from "../assets/map1.svg?react";
 import { SEGMENT_IDS, TABLE_DATA } from "../data/svgMapData";
 import SegmentPopup from "./SegmentPopup";
 import { motion, AnimatePresence } from "framer-motion";
@@ -162,44 +162,54 @@ if (activeSegment) {
   return (
     <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* HEADER */}
-      <header className="fixed top-0 left-0 w-full h-[50px] sm:h-[80px] md:h-[60px] bg-white shadow z-50 flex items-center justify-between px-4 sm:px-6 md:px-12">
-        <img src={montePutLogo} alt="Monteput Logo" className="h-8 md:h-10" />
-        <div className="relative flex items-center">
-          <div className="relative bg-gray-200 rounded-full p-1 flex items-center cursor-pointer transition-all duration-300 hover:bg-gray-300">
-            <div
-              className={`absolute top-1 bottom-1 bg-gray-400 rounded-full transition-all duration-300 ease-in-out shadow-sm ${
-                selectedLanguage === "Crnogorski"
-                  ? "left-1 w-[calc(60%-4px)]"
-                  : "right-1 w-[calc(45%-4px)]"
-              }`}
-            />
-            <button
-              onClick={() => setSelectedLanguage("Crnogorski")}
-              className={`relative z-10 px-1 py-0.5 sm:px-1.5 sm:py-1 md:px-2 md:py-1 text-xs sm:text-xs md:text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${
-                selectedLanguage === "Crnogorski"
-                  ? "text-white"
-                  : "text-gray-700 hover:text-gray-900"
-              }`}
-            >
-              Crnogorski
-            </button>
-            <button
-              onClick={() => setSelectedLanguage("English")}
-              className={`relative z-10 px-1 py-0.5 sm:px-1.5 sm:py-1 md:px-2 md:py-1 text-xs sm:text-xs md:text-xs lg:text-sm font-medium rounded-full transition-all duration-300 whitespace-nowrap ${
-                selectedLanguage === "English"
-                  ? "text-white"
-                  : "text-gray-700 hover:text-gray-900"
-              }`}
-            >
-              English
-            </button>
-          </div>
-        </div>
-      </header>
+<header className="fixed top-0 left-0 w-full h-[45px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5">
+  {/* Lijevo – logo */}
+  <img
+    src={montePutLogo}
+    alt="Monteput Logo"
+    className="h-5 sm:h-6 object-contain"
+  />
+
+  {/* Desno – jezički toggle */}
+  <div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[105px] h-[26px]">
+    {/* Klizni indikator */}
+    <div
+      className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 ${
+        selectedLanguage === "Crnogorski"
+          ? "left-[3px] w-[50px] bg-gray-400"
+          : "right-[3px] w-[50px] bg-gray-400"
+      }`}
+    />
+    {/* Dugmad */}
+    <button
+      onClick={() => setSelectedLanguage("Crnogorski")}
+      className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${
+        selectedLanguage === "Crnogorski"
+          ? "text-white"
+          : "text-gray-600 hover:text-gray-800"
+      }`}
+    >
+      Srpski
+    </button>
+    <button
+      onClick={() => setSelectedLanguage("English")}
+      className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${
+        selectedLanguage === "English"
+          ? "text-white"
+          : "text-gray-600 hover:text-gray-800"
+      }`}
+    >
+      English
+    </button>
+  </div>
+</header>
+
+
+
 
       {/* MAPA */}
       <main
-        className="flex-1 mt-[70px] sm:mt-[80px] md:mt-[100px] flex items-center justify-center overflow-hidden"
+        className="flex-1 mt-[70px] sm:mt-[80px] md:mt-[40px] flex items-center justify-center overflow-hidden"
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
           onMouseMove={(e) => {
@@ -223,7 +233,7 @@ if (activeSegment) {
         <div className="relative w-full h-full flex items-center justify-center">
           <svg
             ref={svgRef}
-            viewBox="0 0 1920 1280"
+            viewBox="0 0 2290 1280"
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-full"
             style={{
