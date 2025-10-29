@@ -278,7 +278,7 @@ if (activeSegment) {
 
           {/* QR kod */}
           <div className="absolute bottom-6 right-6 z-50 hidden md:block">
-            <QrCodeBox url="https://monteput-silk.vercel.app/" />
+            <QrCodeBox url="https://map-sigma-umber.vercel.app/" />
           </div>
         </div>
       </main>
