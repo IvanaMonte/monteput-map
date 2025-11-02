@@ -218,13 +218,17 @@ export default function InteractiveMap() {
     });
   };
 
-  // === Touch zoom for mobile ===
+  // === Touch zoom and pan for mobile ===
   const [touchDistance, setTouchDistance] = useState(0);
   const [lastTouchTime, setLastTouchTime] = useState(0);
+  const [isTouchPanning, setIsTouchPanning] = useState(false);
+  const [lastTouchPos, setLastTouchPos] = useState({ x: 0, y: 0 });
 
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
+      // Two-finger pinch zoom
       e.preventDefault();
+      setIsTouchPanning(false); // Stop any single-finger panning
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.hypot(
@@ -233,14 +237,21 @@ export default function InteractiveMap() {
       );
       setTouchDistance(distance);
     } else if (e.touches.length === 1) {
-      // Handle double tap zoom
+      const touch = e.touches[0];
       const now = Date.now();
+
+      // Handle double tap zoom
       if (now - lastTouchTime < 300) {
         e.preventDefault();
         setZoom((prev) => {
           const next = prev * 1.5;
           return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
         });
+        setIsTouchPanning(false);
+      } else {
+        // Start single-finger panning
+        setIsTouchPanning(true);
+        setLastTouchPos({ x: touch.clientX, y: touch.clientY });
       }
       setLastTouchTime(now);
     }
@@ -248,7 +259,8 @@ export default function InteractiveMap() {
 
   const handleTouchMove = (e) => {
     if (e.touches.length === 2) {
-      e.preventDefault(); // Prevent page zoom when touching SVG
+      // Two-finger pinch zoom
+      e.preventDefault();
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.hypot(
@@ -265,12 +277,24 @@ export default function InteractiveMap() {
         });
         setTouchDistance(distance);
       }
+    } else if (e.touches.length === 1 && isTouchPanning) {
+      // Single-finger panning
+      e.preventDefault();
+      const touch = e.touches[0];
+      const dx = touch.clientX - lastTouchPos.x;
+      const dy = touch.clientY - lastTouchPos.y;
+
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setLastTouchPos({ x: touch.clientX, y: touch.clientY });
     }
   };
 
   const handleTouchEnd = (e) => {
     if (e.touches.length < 2) {
       setTouchDistance(0);
+    }
+    if (e.touches.length === 0) {
+      setIsTouchPanning(false);
     }
   };  // === Pan (klik + povuci) ===
   const handleMouseDown = (e) => {
