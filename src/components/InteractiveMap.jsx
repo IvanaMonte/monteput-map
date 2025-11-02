@@ -208,18 +208,14 @@ export default function InteractiveMap() {
     });
   }, [activeSegment, hovered]);
 
-  // === Zoom (točkić) - allow zoom on map area only ===
+  // === Zoom (točkić) - allow zoom on SVG only ===
   const handleWheel = (e) => {
-    // Only prevent default and zoom if we're over the map area
-    const target = e.target.closest('.map-container');
-    if (target) {
-      e.preventDefault(); // Prevent page scroll only when zooming map
-      const scale = e.deltaY < 0 ? 1.1 : 0.9;
-      setZoom((prev) => {
-        const next = prev * scale;
-        return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
-      });
-    }
+    e.preventDefault(); // Prevent page scroll when zooming SVG
+    const scale = e.deltaY < 0 ? 1.1 : 0.9;
+    setZoom((prev) => {
+      const next = prev * scale;
+      return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
+    });
   };
 
   // === Touch zoom for mobile ===
@@ -227,10 +223,6 @@ export default function InteractiveMap() {
   const [lastTouchTime, setLastTouchTime] = useState(0);
 
   const handleTouchStart = (e) => {
-    // Only handle touch events if we're over the map container
-    const target = e.target.closest('.map-container');
-    if (!target) return;
-
     if (e.touches.length === 2) {
       e.preventDefault();
       const touch1 = e.touches[0];
@@ -256,26 +248,22 @@ export default function InteractiveMap() {
 
   const handleTouchMove = (e) => {
     if (e.touches.length === 2) {
-      // Only prevent default if we're over the map container
-      const target = e.target.closest('.map-container');
-      if (target) {
-        e.preventDefault(); // Prevent page zoom only when zooming map
-        const touch1 = e.touches[0];
-        const touch2 = e.touches[1];
-        const distance = Math.hypot(
-          touch1.clientX - touch2.clientX,
-          touch1.clientY - touch2.clientY
-        );
+      e.preventDefault(); // Prevent page zoom when touching SVG
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
 
-        if (touchDistance > 0) {
-          const scale = distance / touchDistance;
-          const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
-          setZoom((prev) => {
-            const next = prev * dampedScale;
-            return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
-          });
-          setTouchDistance(distance);
-        }
+      if (touchDistance > 0) {
+        const scale = distance / touchDistance;
+        const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
+        setZoom((prev) => {
+          const next = prev * dampedScale;
+          return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
+        });
+        setTouchDistance(distance);
       }
     }
   };
@@ -399,21 +387,22 @@ export default function InteractiveMap() {
       >
         <div
           className="relative w-full h-full flex items-start justify-center map-container mb-20"
-          onWheel={handleWheel}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
         >
           <svg
             ref={svgRef}
             viewBox="0 0 2290 1280"
             preserveAspectRatio="xMidYMid meet"
-            className="w-full h-full"
+            className="w-full h-full touch-none"
+            onWheel={handleWheel}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             style={{
               transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
               transformOrigin: "center",
               transition: isPanning ? "none" : "transform 0.2s ease-out",
               cursor: isPanning ? "grabbing" : "grab",
+              touchAction: "none",
             }}
           >
             <MyMapSVG />
