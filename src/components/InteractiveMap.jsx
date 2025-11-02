@@ -29,8 +29,19 @@ export default function InteractiveMap() {
   const [isPanning, setIsPanning] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
-  const MIN_ZOOM = 1;
-  const MAX_ZOOM = 5;
+  // === Dynamic zoom limits based on screen size ===
+  const getZoomLimits = () => {
+    const width = window.innerWidth;
+    if (width < 768) {
+      // Mobile: Allow more zooming for better detail viewing
+      return { MIN_ZOOM: 0.5, MAX_ZOOM: 8 };
+    } else {
+      // Desktop: Standard zoom range
+      return { MIN_ZOOM: 1, MAX_ZOOM: 5 };
+    }
+  };
+
+  const { MIN_ZOOM, MAX_ZOOM } = getZoomLimits();
 
   // === Hide legend by default and manage dialog ===
   useEffect(() => {
@@ -240,13 +251,11 @@ export default function InteractiveMap() {
       const touch = e.touches[0];
       const now = Date.now();
 
-      // Handle double tap zoom
+      // Handle double tap - reset to default zoom
       if (now - lastTouchTime < 300) {
         e.preventDefault();
-        setZoom((prev) => {
-          const next = prev * 1.5;
-          return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
-        });
+        setZoom(getResponsiveZoom());
+        setOffset({ x: 0, y: 0 }); // Also reset position to center
         setIsTouchPanning(false);
       } else {
         // Start single-finger panning
