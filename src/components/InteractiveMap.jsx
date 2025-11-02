@@ -317,12 +317,12 @@ export default function InteractiveMap() {
   return (
     <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* HEADER */}
-      <header className="fixed top-0 left-0 w-full h-[45px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5">
+      <header className="fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5">
         {/* Lijevo – logo */}
         <img
           src={montePutLogo}
           alt="Monteput Logo"
-          className="h-5 sm:h-6 object-contain"
+          className="h-7 sm:h-8 object-contain"
         />
 
         {/* Desno – jezički toggle */}
@@ -361,7 +361,7 @@ export default function InteractiveMap() {
 
       {/* MAPA */}
       <main
-        className="flex-1 mt-[70px] sm:mt-[80px] md:mt-[40px] flex items-center justify-center overflow-hidden"
+        className="flex-1 mt-[80px] sm:mt-[90px] md:mt-[60px] flex items-center justify-center overflow-hidden"
         onMouseDown={handleMouseDown}
         onMouseMove={(e) => {
           // === Pan kontrola ===
