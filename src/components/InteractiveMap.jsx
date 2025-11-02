@@ -10,12 +10,13 @@ export default function InteractiveMap() {
   const [activeSegment, setActiveSegment] = useState(null);
   const [hovered, setHovered] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("Crnogorski");
+  const [showLegendDialog, setShowLegendDialog] = useState(false);
 
   const svgRef = useRef(null);
 
   const getResponsiveZoom = () => {
     const width = window.innerWidth;
-    if (width < 640) return 2;
+    if (width < 640) return 2.8;
     if (width < 768) return 1.8;
     if (width < 1024) return 1.6;
     if (width < 1440) return 1.5;
@@ -31,9 +32,99 @@ export default function InteractiveMap() {
   const MIN_ZOOM = 1;
   const MAX_ZOOM = 5;
 
+  // === Hide legend by default and manage dialog ===
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
 
+    // Always hide legend elements in the SVG
+    const legendSelectors = [
+      '#LEGENDA',
+      '#legenda',
+      '[id*="legend" i]',
+      '[id*="legenda" i]',
+      '[class*="legend" i]',
+      '[class*="legenda" i]',
+      'g[id*="Legend" i]',
+      'g[id*="Legenda" i]',
+      'text[id*="legend" i]',
+      'rect[id*="legend" i]'
+    ];
 
-  // === Aktivacija hover/klik događaja ===
+    legendSelectors.forEach(selector => {
+      const elements = svg.querySelectorAll(selector);
+      elements.forEach(el => {
+        el.style.display = 'none';
+        el.style.visibility = 'hidden';
+      });
+    });
+  }, []);
+
+  // === Get legend content for dialog ===
+  const getLegendContent = () => {
+    // Return the exact SVG legend markup you provided
+    const svgLegend = `
+      <svg width="100%" height="200" viewBox="0 833 329 162" xmlns="http://www.w3.org/2000/svg">
+        <style>
+          .st61 { fill: #A2A2A3; stroke: #ddd; stroke-width: 1; }
+          .st12 { fill: #ffffff; }
+          .st62 { font-family: Arial, sans-serif; }
+          .st63 { font-size: 12px; }
+          .st64 { fill: #FFFFFF; stroke: #3E67B0; stroke-width: 2.4046; stroke-linecap: round; stroke-miterlimit: 10; }
+          .st29 { fill: #fff; stroke: #333; stroke-width: 1; }
+          .st28 { fill: #CD2656; }
+          .st65 { fill: none; stroke: #FCC112; stroke-width: 8.865; stroke-miterlimit: 10; }
+          .st66 { fill: none; stroke: #F1F1F2; stroke-width: 1.0217; stroke-miterlimit: 10; }
+          .st67 { fill: none; stroke: #CD2656; stroke-width: 8.865; stroke-miterlimit: 10; }
+          .st68 { stroke: #f39c12; stroke-width: 2; fill: none; }
+          .st69 { fill: none; stroke: #3E67B0; stroke-width: 8.865; stroke-miterlimit: 10; }
+        </style>
+        <g id="LEGENDA">
+          <g>
+            <rect y="833.87" class="st61" width="328.68" height="161.04"></rect>
+            <g>
+              <text transform="matrix(1 0 0 1 77.9498 862.4926)">
+                <tspan x="0" y="0" class="st12 st62 st63">A1 - HIGHWAY BAR - BOLJARE</tspan>
+                <tspan x="0" y="21.92" class="st12 st62 st63">CONSTRUCTED HIGHWAYS SECTION</tspan>
+                <tspan x="0" y="43.83" class="st12 st62 st63">A1 - PLANNED INTERCHANGES</tspan>
+                <tspan x="0" y="65.75" class="st12 st62 st63">A2 - ADRIATIC IONIAN HIGHWAY</tspan>
+                <tspan x="0" y="87.66" class="st12 st62 st63">PLANNED EXPRESSWAYS</tspan>
+                <tspan x="0" y="109.58" class="st12 st62 st63">DIVISION OF SECTIONS</tspan>
+              </text>
+              <g>
+                <circle class="st64" cx="54.48" cy="967.14" r="7.13"></circle>
+                <circle class="st29" cx="54.48" cy="967.14" r="4.04"></circle>
+              </g>
+              <g>
+                <circle class="st12" cx="54.48" cy="902.09" r="9.44"></circle>
+                <circle class="st28" cx="54.48" cy="902.09" r="5.47"></circle>
+              </g>
+              <g>
+                <line class="st65" x1="40.93" y1="945.63" x2="68.02" y2="945.63"></line>
+                <line class="st66" x1="40.93" y1="945.63" x2="68.02" y2="945.63"></line>
+              </g>
+              <g>
+                <line class="st67" x1="40.93" y1="879.99" x2="68.02" y2="879.99"></line>
+                <line class="st68" x1="41.52" y1="879.99" x2="68.62" y2="879.99"></line>
+              </g>
+              <g>
+                <line class="st67" x1="40.93" y1="858.45" x2="68.02" y2="858.45"></line>
+                <line class="st66" x1="40.93" y1="858.45" x2="68.02" y2="858.45"></line>
+              </g>
+              <g>
+                <line class="st69" x1="40.93" y1="923.51" x2="68.02" y2="923.51"></line>
+                <line class="st66" x1="40.93" y1="923.51" x2="68.02" y2="923.51"></line>
+              </g>
+            </g>
+          </g>
+        </g>
+      </svg>
+    `;
+
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(svgLegend, 'image/svg+xml');
+    return svgDoc.documentElement;
+  };  // === Aktivacija hover/klik događaja ===
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -91,9 +182,10 @@ export default function InteractiveMap() {
             el.style.transformOrigin = "center";
           } else {
             // ❌ Neaktivni segmenti - potamni i smanji
-            el.setAttribute("opacity", "0.2");
+            el.setAttribute("opacity", "0.5");
             el.setAttribute("stroke-width", "1");
-            el.style.filter = "brightness(0.3) grayscale(0.5)";
+            el.style.filter = "brightness(0.1) grayscale(0.1)";
+
           }
         } else if (hovered === key) {
           // 🟡 Hover
@@ -116,8 +208,25 @@ export default function InteractiveMap() {
     });
   }, [activeSegment, hovered]);
 
-  // === Zoom (točkić) ===
+  // === Zoom (točkić) - only on map area, restricted on mobile ===
   const handleWheel = (e) => {
+    // Check if we're on mobile
+    const isMobile = window.innerWidth < 768;
+
+    // On mobile, only allow zoom if the target is within the SVG or map container
+    if (isMobile) {
+      const svg = svgRef.current;
+
+      // Check if the event target is within the SVG or map area
+      const isWithinMap = svg && (svg.contains(e.target) || e.target === svg);
+      const isMapContainer = e.currentTarget.classList.contains('map-container');
+
+      if (!isWithinMap && !isMapContainer) {
+        return; // Don't zoom if not on map area on mobile
+      }
+    }
+
+    e.preventDefault(); // Prevent page scroll
     const scale = e.deltaY < 0 ? 1.1 : 0.9;
     setZoom((prev) => {
       const next = prev * scale;
@@ -125,19 +234,47 @@ export default function InteractiveMap() {
     });
   };
 
-  // === Pan (klik + povuci) ===
+  // === Touch zoom for mobile ===
+  const [touchDistance, setTouchDistance] = useState(0);
+
+  const handleTouchStart = (e) => {
+    if (e.touches.length === 2) {
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
+      setTouchDistance(distance);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault(); // Prevent page zoom
+      const touch1 = e.touches[0];
+      const touch2 = e.touches[1];
+      const distance = Math.hypot(
+        touch1.clientX - touch2.clientX,
+        touch1.clientY - touch2.clientY
+      );
+
+      if (touchDistance > 0) {
+        const scale = distance / touchDistance;
+        setZoom((prev) => {
+          const next = prev * scale;
+          return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
+        });
+        setTouchDistance(distance);
+      }
+    }
+  };  // === Pan (klik + povuci) ===
   const handleMouseDown = (e) => {
     setIsPanning(true);
     setLastMousePos({ x: e.clientX, y: e.clientY });
   };
 
-  const handleMouseMove = (e) => {
-    if (!isPanning) return;
-    const dx = e.clientX - lastMousePos.x;
-    const dy = e.clientY - lastMousePos.y;
-    setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-    setLastMousePos({ x: e.clientX, y: e.clientY });
-  };
+
 
   const handleMouseUp = () => setIsPanning(false);
 
@@ -225,7 +362,6 @@ export default function InteractiveMap() {
       {/* MAPA */}
       <main
         className="flex-1 mt-[70px] sm:mt-[80px] md:mt-[40px] flex items-center justify-center overflow-hidden"
-        onWheel={handleWheel}
         onMouseDown={handleMouseDown}
         onMouseMove={(e) => {
           // === Pan kontrola ===
@@ -245,7 +381,12 @@ export default function InteractiveMap() {
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <div className="relative w-full h-full flex items-center justify-center">
+        <div
+          className="relative w-full h-full flex items-center justify-center map-container"
+          onWheel={handleWheel}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+        >
           <svg
             ref={svgRef}
             viewBox="0 0 2290 1280"
@@ -291,12 +432,139 @@ export default function InteractiveMap() {
             />
           )}
 
+          {/* Legend Dialog Button */}
+          <button
+            onClick={() => setShowLegendDialog(true)}
+            className="absolute bottom-6 left-6 z-50 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 shadow-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-700"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            Legenda
+          </button>
+
           {/* QR kod */}
           <div className="absolute bottom-6 right-6 z-50 hidden md:block">
             <QrCodeBox url="https://monteput-map.vercel.app/" />
           </div>
         </div>
       </main>
+
+      {/* Legend Dialog */}
+      {showLegendDialog && (
+        <div
+          className="fixed inset-0 z-[100] bg-black bg-opacity-50"
+          onClick={() => setShowLegendDialog(false)}
+        >
+          <div
+            className="bg-white shadow-xl w-full sm:w-96 h-full overflow-hidden animate-slide-in-left flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Dialog Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">Legenda mape</h3>
+              <button
+                onClick={() => setShowLegendDialog(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Dialog Content */}
+            <div className="p-4 overflow-y-auto flex-1">
+              {(() => {
+                const legendContent = getLegendContent();
+                if (legendContent) {
+                  return (
+                    <div className="w-full">
+                      <div
+                        className="legend-svg-content w-full"
+                        dangerouslySetInnerHTML={{
+                          __html: legendContent.outerHTML
+                        }}
+                      />
+                    </div>
+                  );
+                } else {
+                  // Manual legend based on the SVG content we found
+                  return (
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-gray-800 mb-4">Objašnjenje simbola na mapi:</h4>
+
+                      <div className="space-y-3">
+                        {/* A1 Highway */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-1 bg-blue-600 rounded"></div>
+                          <span className="text-sm">A1 - Autoput Bar - Boljare</span>
+                        </div>
+
+                        {/* Constructed sections */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-1 bg-green-600 rounded"></div>
+                          <span className="text-sm">Izgrađene dionice autoputa</span>
+                        </div>
+
+                        {/* Planned interchanges */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-white shadow"></div>
+                          <span className="text-sm">A1 - Planirana čvorišta</span>
+                        </div>
+
+                        {/* A2 Highway */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-1 bg-purple-600 rounded"></div>
+                          <span className="text-sm">A2 - Jadranski jonski autoput</span>
+                        </div>
+
+                        {/* Planned expressways */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-1 bg-orange-500 rounded border border-orange-300"></div>
+                          <span className="text-sm">Planirane brze saobraćajnice</span>
+                        </div>
+
+                        {/* Section divisions */}
+                        <div className="flex items-center gap-3">
+                          <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+                          <span className="text-sm">Podjela dionica</span>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 pt-4 border-t border-gray-200">
+                        <p className="text-xs text-gray-500 text-center">
+                          Kliknite na dionice na mapi za detaljne informacije
+                        </p>
+                      </div>
+                    </div>
+                  );
+                }
+              })()}
+            </div>
+
+            {/* Dialog Footer */}
+            <div className="flex justify-end p-4 border-t bg-gray-50">
+              <button
+                onClick={() => setShowLegendDialog(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              >
+                Zatvori
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER */}
       <footer className="w-full h-[60px] bg-white border-t flex items-center justify-center text-gray-600 text-sm fixed bottom-0 left-0">

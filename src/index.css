@@ -17,3 +17,46 @@ svg * {
     cursor: pointer;
     transition: filter 0.6s ease, opacity 0.6s ease, stroke-width 0.6s ease; /* sporije i glađe */
 }
+
+/* Legend dialog slide-in animation */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+/* SVG Legend styles */
+.legend-svg-content svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.legend-svg-content text {
+  pointer-events: none !important;
+  cursor: default !important;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  fill: #000;
+}
+
+.legend-svg-content rect {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.legend-svg-content line {
+  pointer-events: none !important;
+  cursor: default !important;
+}
+
+.legend-svg-content circle {
+  pointer-events: none !important;
+  cursor: default !important;
+}
