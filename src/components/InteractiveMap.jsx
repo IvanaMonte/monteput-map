@@ -208,24 +208,8 @@ export default function InteractiveMap() {
     });
   }, [activeSegment, hovered]);
 
-  // === Zoom (točkić) - only on map area, restricted on mobile ===
+  // === Zoom (točkić) - allow zoom on map area ===
   const handleWheel = (e) => {
-    // Check if we're on mobile
-    const isMobile = window.innerWidth < 768;
-
-    // On mobile, only allow zoom if the target is within the SVG or map container
-    if (isMobile) {
-      const svg = svgRef.current;
-
-      // Check if the event target is within the SVG or map area
-      const isWithinMap = svg && (svg.contains(e.target) || e.target === svg);
-      const isMapContainer = e.currentTarget.classList.contains('map-container');
-
-      if (!isWithinMap && !isMapContainer) {
-        return; // Don't zoom if not on map area on mobile
-      }
-    }
-
     e.preventDefault(); // Prevent page scroll
     const scale = e.deltaY < 0 ? 1.1 : 0.9;
     setZoom((prev) => {
@@ -236,9 +220,11 @@ export default function InteractiveMap() {
 
   // === Touch zoom for mobile ===
   const [touchDistance, setTouchDistance] = useState(0);
+  const [lastTouchTime, setLastTouchTime] = useState(0);
 
   const handleTouchStart = (e) => {
     if (e.touches.length === 2) {
+      e.preventDefault();
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
       const distance = Math.hypot(
@@ -246,6 +232,17 @@ export default function InteractiveMap() {
         touch1.clientY - touch2.clientY
       );
       setTouchDistance(distance);
+    } else if (e.touches.length === 1) {
+      // Handle double tap zoom
+      const now = Date.now();
+      if (now - lastTouchTime < 300) {
+        e.preventDefault();
+        setZoom((prev) => {
+          const next = prev * 1.5;
+          return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
+        });
+      }
+      setLastTouchTime(now);
     }
   };
 
@@ -261,12 +258,19 @@ export default function InteractiveMap() {
 
       if (touchDistance > 0) {
         const scale = distance / touchDistance;
+        const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
         setZoom((prev) => {
-          const next = prev * scale;
+          const next = prev * dampedScale;
           return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
         });
         setTouchDistance(distance);
       }
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    if (e.touches.length < 2) {
+      setTouchDistance(0);
     }
   };  // === Pan (klik + povuci) ===
   const handleMouseDown = (e) => {
@@ -386,6 +390,7 @@ export default function InteractiveMap() {
           onWheel={handleWheel}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <svg
             ref={svgRef}
