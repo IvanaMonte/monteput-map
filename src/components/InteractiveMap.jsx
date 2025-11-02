@@ -208,14 +208,18 @@ export default function InteractiveMap() {
     });
   }, [activeSegment, hovered]);
 
-  // === Zoom (točkić) - allow zoom on map area ===
+  // === Zoom (točkić) - allow zoom on map area only ===
   const handleWheel = (e) => {
-    e.preventDefault(); // Prevent page scroll
-    const scale = e.deltaY < 0 ? 1.1 : 0.9;
-    setZoom((prev) => {
-      const next = prev * scale;
-      return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
-    });
+    // Only prevent default and zoom if we're over the map area
+    const target = e.target.closest('.map-container');
+    if (target) {
+      e.preventDefault(); // Prevent page scroll only when zooming map
+      const scale = e.deltaY < 0 ? 1.1 : 0.9;
+      setZoom((prev) => {
+        const next = prev * scale;
+        return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
+      });
+    }
   };
 
   // === Touch zoom for mobile ===
@@ -451,7 +455,7 @@ export default function InteractiveMap() {
           onClick={() => setShowLegendDialog(false)}
         >
           <div
-            className="bg-white shadow-xl w-full sm:w-96 h-full overflow-hidden animate-slide-in-left flex flex-col"
+            className="bg-white shadow-xl w-80 sm:w-96 max-h-[70vh] sm:h-full overflow-hidden animate-slide-in-left flex flex-col absolute left-4 top-20 sm:left-0 sm:top-0 sm:relative rounded-lg sm:rounded-none"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Dialog Header */}
@@ -551,35 +555,50 @@ export default function InteractiveMap() {
       )}
 
       {/* FOOTER */}
-      <footer className="w-full h-[60px] bg-white border-t flex items-center justify-between px-6 text-gray-600 text-sm fixed bottom-0 left-0">
-        {/* Legend Button */}
-        <button
-          onClick={() => setShowLegendDialog(true)}
-          className="bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-700"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-          Legenda
-        </button>
+      <footer className="w-full bg-white border-t fixed bottom-0 left-0 z-40">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 py-2 sm:px-6 sm:h-[60px]">
+          {/* Mobile: Centered layout, Desktop: Left aligned */}
+          <div className="flex items-center justify-center sm:justify-start w-full sm:w-auto">
+            {/* Legend Button */}
+            <button
+              onClick={() => setShowLegendDialog(true)}
+              className="bg-blue-50 hover:bg-blue-100 border border-blue-300 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 flex items-center gap-2 text-sm font-medium text-blue-700"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"
+                />
+                <circle cx="9" cy="12" r="1" fill="currentColor" />
+                <circle cx="15" cy="12" r="1" fill="currentColor" />
+              </svg>
+              <span className="font-semibold">Legenda</span>
+            </button>
+          </div>
 
-        {/* Copyright */}
-        <div className="text-center flex-1">
-          © {new Date().getFullYear()} Monteput d.o.o. Sva prava zadržana.
+          {/* Copyright - Hidden on mobile, shown on desktop */}
+          <div className="hidden sm:block text-center flex-1 mx-4 text-gray-600 text-sm">
+            © {new Date().getFullYear()} Monteput d.o.o. Sva prava zadržana.
+          </div>
+
+          {/* Mobile copyright - bottom row */}
+          <div className="text-center text-xs text-gray-500 mt-1 sm:hidden">
+            © {new Date().getFullYear()} Monteput d.o.o.
+          </div>
         </div>
-
-        {/* Empty space for balance */}
-        <div className="w-[120px]"></div>
       </footer>
     </div>
   );
