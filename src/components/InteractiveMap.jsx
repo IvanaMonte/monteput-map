@@ -282,6 +282,16 @@ export default function InteractiveMap() {
 
   const handleMouseUp = () => setIsPanning(false);
 
+  // === Mouse move handler for SVG panning ===
+  const handleSvgMouseMove = (e) => {
+    if (isPanning) {
+      const dx = e.clientX - lastMousePos.x;
+      const dy = e.clientY - lastMousePos.y;
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setLastMousePos({ x: e.clientX, y: e.clientY });
+    }
+  };
+
   // === Responsive reset na resize ===
   useEffect(() => {
     const handleResize = () => {
@@ -366,24 +376,14 @@ export default function InteractiveMap() {
       {/* MAPA */}
       <main
         className="flex-1 mt-[80px] sm:mt-[90px] md:mt-[60px] flex items-center justify-center overflow-hidden"
-        onMouseDown={handleMouseDown}
         onMouseMove={(e) => {
-          // === Pan kontrola ===
-          if (isPanning) {
-            const dx = e.clientX - lastMousePos.x;
-            const dy = e.clientY - lastMousePos.y;
-            setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-            setLastMousePos({ x: e.clientX, y: e.clientY });
-            return; // ako panujemo, ne treba tooltip
-          }
-
           // === Tooltip praćenje ===
-          const rect = e.currentTarget.getBoundingClientRect();
-          document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-          document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+          if (!isPanning) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+            document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+          }
         }}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
       >
         <div
           className="relative w-full h-full flex items-start justify-center map-container mb-20"
@@ -397,6 +397,10 @@ export default function InteractiveMap() {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleSvgMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
             style={{
               transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
               transformOrigin: "center",
@@ -452,7 +456,7 @@ export default function InteractiveMap() {
           onClick={() => setShowLegendDialog(false)}
         >
           <div
-            className="bg-white shadow-xl w-80 sm:w-96 max-h-[70vh] sm:h-full overflow-hidden animate-slide-in-left flex flex-col absolute left-4 top-20 sm:left-0 sm:top-0 sm:relative rounded-lg sm:rounded-none"
+            className="bg-white shadow-xl w-80 max-h-[70vh] sm:w-auto sm:max-w-md sm:max-h-[80vh] overflow-hidden animate-slide-in-left flex flex-col absolute left-0 top-20 sm:left-0 sm:top-8 rounded-r-lg sm:rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Dialog Header */}
