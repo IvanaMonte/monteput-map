@@ -227,6 +227,10 @@ export default function InteractiveMap() {
   const [lastTouchTime, setLastTouchTime] = useState(0);
 
   const handleTouchStart = (e) => {
+    // Only handle touch events if we're over the map container
+    const target = e.target.closest('.map-container');
+    if (!target) return;
+
     if (e.touches.length === 2) {
       e.preventDefault();
       const touch1 = e.touches[0];
@@ -252,22 +256,26 @@ export default function InteractiveMap() {
 
   const handleTouchMove = (e) => {
     if (e.touches.length === 2) {
-      e.preventDefault(); // Prevent page zoom
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch1.clientX - touch2.clientX,
-        touch1.clientY - touch2.clientY
-      );
+      // Only prevent default if we're over the map container
+      const target = e.target.closest('.map-container');
+      if (target) {
+        e.preventDefault(); // Prevent page zoom only when zooming map
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const distance = Math.hypot(
+          touch1.clientX - touch2.clientX,
+          touch1.clientY - touch2.clientY
+        );
 
-      if (touchDistance > 0) {
-        const scale = distance / touchDistance;
-        const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
-        setZoom((prev) => {
-          const next = prev * dampedScale;
-          return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
-        });
-        setTouchDistance(distance);
+        if (touchDistance > 0) {
+          const scale = distance / touchDistance;
+          const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
+          setZoom((prev) => {
+            const next = prev * dampedScale;
+            return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
+          });
+          setTouchDistance(distance);
+        }
       }
     }
   };
