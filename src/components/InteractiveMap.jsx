@@ -13,14 +13,25 @@ export default function InteractiveMap() {
 
   const svgRef = useRef(null);
 
+  const getResponsiveZoom = () => {
+    const width = window.innerWidth;
+    if (width < 640) return 2;
+    if (width < 768) return 1.8;
+    if (width < 1024) return 1.6;
+    if (width < 1440) return 1.5;
+    return 1.3;
+  }
+
   // Zoom & Pan
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(getResponsiveZoom());
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
   const MIN_ZOOM = 1;
   const MAX_ZOOM = 5;
+
+
 
   // === Aktivacija hover/klik događaja ===
   useEffect(() => {
@@ -71,29 +82,36 @@ export default function InteractiveMap() {
         const el = svg.querySelector(`#${CSS.escape(id)}`);
         if (!el) return;
 
-if (activeSegment) {
-  if (key === activeSegment) {
-    // ✅ Aktivni segment - lagano posvijetli, zadrži boju
-    el.style.filter = "brightness(1.3)";
-    el.style.opacity = "1";
-    el.style.strokeWidth = "6px";
-  } else {
-    // ❌ Ostali segmenti - zatamni, deluju "disabled"
-    el.style.filter = "brightness(0.4)";
-    el.style.opacity = "0.5";
-    el.style.strokeWidth = "2px";
-  }
-} else if (hovered === key) {
-  // 🟡 Hover (kad ništa nije aktivno)
-  el.style.filter = "brightness(1.2)";
-  el.style.opacity = "1";
-  el.style.strokeWidth = "4px";
-} else {
-  // 🔵 Normalno stanje
-  el.style.filter = "";
-  el.style.opacity = "1";
-  el.style.strokeWidth = "2px";
-}
+        if (activeSegment) {
+          if (key === activeSegment) {
+            // ✅ Aktivni segment
+            el.setAttribute("stroke-width", "8");
+            el.setAttribute("opacity", "1");
+            el.style.filter = "brightness(3) drop-shadow(0 0 4px #EF4444) drop-shadow(0 0 4px #EF4444)"; // Double glow
+            el.style.transformOrigin = "center";
+          } else {
+            // ❌ Neaktivni segmenti - potamni i smanji
+            el.setAttribute("opacity", "0.2");
+            el.setAttribute("stroke-width", "1");
+            el.style.filter = "brightness(0.3) grayscale(0.5)";
+          }
+        } else if (hovered === key) {
+          // 🟡 Hover
+          el.removeAttribute("fill");
+          el.removeAttribute("stroke");
+          el.setAttribute("opacity", "1");
+          el.setAttribute("stroke-width", "4");
+          el.style.filter = "brightness(1.3)";
+          el.style.transform = "scale(1)";
+        } else {
+          // 🔵 Normalno stanje - potpuno resetovanje
+          el.removeAttribute("fill");
+          el.removeAttribute("stroke");
+          el.removeAttribute("stroke-width");
+          el.removeAttribute("opacity");
+          el.style.filter = "";
+          el.style.transform = "scale(1)";
+        }
       });
     });
   }, [activeSegment, hovered]);
@@ -126,83 +144,80 @@ if (activeSegment) {
   // === Responsive reset na resize ===
   useEffect(() => {
     const handleResize = () => {
-      setZoom(1);
+      setZoom(getResponsiveZoom());
       setOffset({ x: 0, y: 0 });
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-        // === Zatvaranje popup-a klikom van segmenta ===
-   useEffect(() => {
-        const handleOutsideClick = (e) => {
-          // ako nema aktivnog popup-a, ništa ne radi
-          if (!activeSegment) return;
+  // === Zatvaranje popup-a klikom van segmenta ===
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      // ako nema aktivnog popup-a, ništa ne radi
+      if (!activeSegment) return;
 
-          // ako je kliknut unutar popup-a ili QR kutije — ignoriši
-          const popup = document.querySelector(".popup-container");
-          if (popup && popup.contains(e.target)) return;
+      // ako je kliknut unutar popup-a ili QR kutije — ignoriši
+      const popup = document.querySelector(".popup-container");
+      if (popup && popup.contains(e.target)) return;
 
-          // ako je kliknut unutar SVG segmenta — ignoriši (da se ne zatvori odmah)
-          const svg = svgRef.current;
-          if (svg && svg.contains(e.target)) {
-            const clickedSegment = Object.values(SEGMENT_IDS)
-              .flat()
-              .some((id) => e.target.closest(`#${CSS.escape(id)}`));
-            if (clickedSegment) return;
-          }
+      // ako je kliknut unutar SVG segmenta — ignoriši (da se ne zatvori odmah)
+      const svg = svgRef.current;
+      if (svg && svg.contains(e.target)) {
+        const clickedSegment = Object.values(SEGMENT_IDS)
+          .flat()
+          .some((id) => e.target.closest(`#${CSS.escape(id)}`));
+        if (clickedSegment) return;
+      }
 
-          // inače, zatvori popup
-          setActiveSegment(null);
-        };
+      // inače, zatvori popup
+      setActiveSegment(null);
+    };
 
-        document.addEventListener("click", handleOutsideClick);
-        return () => document.removeEventListener("click", handleOutsideClick);
-      }, [activeSegment]);
+    document.addEventListener("click", handleOutsideClick);
+    return () => document.removeEventListener("click", handleOutsideClick);
+  }, [activeSegment]);
 
   return (
     <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* HEADER */}
-<header className="fixed top-0 left-0 w-full h-[45px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5">
-  {/* Lijevo – logo */}
-  <img
-    src={montePutLogo}
-    alt="Monteput Logo"
-    className="h-5 sm:h-6 object-contain"
-  />
+      <header className="fixed top-0 left-0 w-full h-[45px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5">
+        {/* Lijevo – logo */}
+        <img
+          src={montePutLogo}
+          alt="Monteput Logo"
+          className="h-5 sm:h-6 object-contain"
+        />
 
-  {/* Desno – jezički toggle */}
-  <div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[105px] h-[26px]">
-    {/* Klizni indikator */}
-    <div
-      className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 ${
-        selectedLanguage === "Crnogorski"
-          ? "left-[3px] w-[50px] bg-gray-400"
-          : "right-[3px] w-[50px] bg-gray-400"
-      }`}
-    />
-    {/* Dugmad */}
-    <button
-      onClick={() => setSelectedLanguage("Crnogorski")}
-      className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${
-        selectedLanguage === "Crnogorski"
-          ? "text-white"
-          : "text-gray-600 hover:text-gray-800"
-      }`}
-    >
-      Srpski
-    </button>
-    <button
-      onClick={() => setSelectedLanguage("English")}
-      className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${
-        selectedLanguage === "English"
-          ? "text-white"
-          : "text-gray-600 hover:text-gray-800"
-      }`}
-    >
-      English
-    </button>
-  </div>
-</header>
+        {/* Desno – jezički toggle */}
+        <div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[105px] h-[26px]">
+          {/* Klizni indikator */}
+          <div
+            className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 ${selectedLanguage === "Crnogorski"
+              ? "left-[3px] w-[50px] bg-gray-400"
+              : "right-[3px] w-[50px] bg-gray-400"
+              }`}
+          />
+          {/* Dugmad */}
+          <button
+            onClick={() => setSelectedLanguage("Crnogorski")}
+            className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${selectedLanguage === "Crnogorski"
+              ? "text-white"
+              : "text-gray-600 hover:text-gray-800"
+              }`}
+          >
+            Srpski
+          </button>
+          <button
+            onClick={() => setSelectedLanguage("English")}
+            className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${selectedLanguage === "English"
+              ? "text-white"
+              : "text-gray-600 hover:text-gray-800"
+              }`}
+          >
+            English
+          </button>
+        </div>
+      </header>
 
 
 
@@ -212,21 +227,21 @@ if (activeSegment) {
         className="flex-1 mt-[70px] sm:mt-[80px] md:mt-[40px] flex items-center justify-center overflow-hidden"
         onWheel={handleWheel}
         onMouseDown={handleMouseDown}
-          onMouseMove={(e) => {
-    // === Pan kontrola ===
-    if (isPanning) {
-      const dx = e.clientX - lastMousePos.x;
-      const dy = e.clientY - lastMousePos.y;
-      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
-      setLastMousePos({ x: e.clientX, y: e.clientY });
-      return; // ako panujemo, ne treba tooltip
-    }
+        onMouseMove={(e) => {
+          // === Pan kontrola ===
+          if (isPanning) {
+            const dx = e.clientX - lastMousePos.x;
+            const dy = e.clientY - lastMousePos.y;
+            setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+            setLastMousePos({ x: e.clientX, y: e.clientY });
+            return; // ako panujemo, ne treba tooltip
+          }
 
-    // === Tooltip praćenje ===
-    const rect = e.currentTarget.getBoundingClientRect();
-    document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-    document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
-  }}
+          // === Tooltip praćenje ===
+          const rect = e.currentTarget.getBoundingClientRect();
+          document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+          document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+        }}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
