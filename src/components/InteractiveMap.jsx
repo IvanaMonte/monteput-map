@@ -386,7 +386,7 @@ export default function InteractiveMap() {
         onMouseLeave={handleMouseUp}
       >
         <div
-          className="relative w-full h-full flex items-center justify-center map-container"
+          className="relative w-full h-full flex items-start justify-center map-container mb-20"
           onWheel={handleWheel}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -436,27 +436,6 @@ export default function InteractiveMap() {
               onClose={() => setActiveSegment(null)}
             />
           )}
-
-          {/* Legend Dialog Button */}
-          <button
-            onClick={() => setShowLegendDialog(true)}
-            className="absolute bottom-6 left-6 z-50 bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 shadow-lg transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-700"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Legenda
-          </button>
 
           {/* QR kod */}
           <div className="absolute bottom-6 right-6 z-50 hidden md:block">
@@ -572,8 +551,35 @@ export default function InteractiveMap() {
       )}
 
       {/* FOOTER */}
-      <footer className="w-full h-[60px] bg-white border-t flex items-center justify-center text-gray-600 text-sm fixed bottom-0 left-0">
-        © {new Date().getFullYear()} Monteput d.o.o. Sva prava zadržana.
+      <footer className="w-full h-[60px] bg-white border-t flex items-center justify-between px-6 text-gray-600 text-sm fixed bottom-0 left-0">
+        {/* Legend Button */}
+        <button
+          onClick={() => setShowLegendDialog(true)}
+          className="bg-white hover:bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 shadow-sm transition-all duration-200 flex items-center gap-2 text-sm font-medium text-gray-700"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+          Legenda
+        </button>
+
+        {/* Copyright */}
+        <div className="text-center flex-1">
+          © {new Date().getFullYear()} Monteput d.o.o. Sva prava zadržana.
+        </div>
+
+        {/* Empty space for balance */}
+        <div className="w-[120px]"></div>
       </footer>
     </div>
   );
