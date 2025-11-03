@@ -422,15 +422,16 @@ export default function InteractiveMap() {
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-full touch-none"
             onWheel={handleWheel}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleSvgMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            // onTouchStart={handleTouchStart}
+            // onTouchMove={handleTouchMove}
+            // onTouchEnd={handleTouchEnd}
+            // onMouseDown={handleMouseDown}
+            // onMouseMove={handleSvgMouseMove}
+            // onMouseUp={handleMouseUp}
+            // onMouseLeave={handleMouseUp}
             style={{
-              transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+              // transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+              transform: `scale(${zoom})`,
               transformOrigin: "center",
               transition: isPanning ? "none" : "transform 0.2s ease-out",
               cursor: isPanning ? "grabbing" : "grab",
