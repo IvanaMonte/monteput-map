@@ -1,8 +1,14 @@
 import React, { useRef, useState } from "react";
-import { TABLE_DATA } from "../data/svgMapData";
+import { TABLE_DATA,TABLE_DATA_EN  } from "../data/svgMapData";
 
-const SegmentPopup = ({ segmentKey, onClose }) => {
-  const data = TABLE_DATA[segmentKey];
+const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) => {
+
+  //const data = TABLE_DATA[segmentKey];
+  const data =
+  selectedLanguage === "English"
+    ? TABLE_DATA_EN[segmentKey]
+    : TABLE_DATA[segmentKey];
+
   if (!data) return null;
 
   const sheetRef = useRef(null);

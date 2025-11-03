@@ -464,12 +464,13 @@ export default function InteractiveMap() {
           </AnimatePresence>
 
           {/* Popup */}
-          {activeSegment && (
-            <SegmentPopup
-              segmentKey={activeSegment}
-              onClose={() => setActiveSegment(null)}
-            />
-          )}
+{activeSegment && (
+  <SegmentPopup
+    segmentKey={activeSegment}
+    onClose={() => setActiveSegment(null)}
+    selectedLanguage={selectedLanguage}   // ⬅️ ovo dodaj
+  />
+)}
 
           {/* QR kod */}
           <div className="absolute bottom-6 right-6 z-50 hidden md:block">
