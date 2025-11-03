@@ -372,35 +372,30 @@ export default function InteractiveMap() {
           className="h-7 sm:h-8 object-contain"
         />
 
-        {/* Desno – jezički toggle */}
-        <div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[105px] h-[26px]">
-          {/* Klizni indikator */}
-          <div
-            className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 ${selectedLanguage === "Crnogorski"
-              ? "left-[3px] w-[50px] bg-gray-400"
-              : "right-[3px] w-[50px] bg-gray-400"
-              }`}
-          />
-          {/* Dugmad */}
-          <button
-            onClick={() => setSelectedLanguage("Crnogorski")}
-            className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${selectedLanguage === "Crnogorski"
-              ? "text-white"
-              : "text-gray-600 hover:text-gray-800"
-              }`}
-          >
-            Srpski
-          </button>
-          <button
-            onClick={() => setSelectedLanguage("English")}
-            className={`relative z-10 px-2 text-[10px] font-medium rounded-full transition-all duration-300 ${selectedLanguage === "English"
-              ? "text-white"
-              : "text-gray-600 hover:text-gray-800"
-              }`}
-          >
-            English
-          </button>
-        </div>
+{/* Jezički toggle */}
+<div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[130px] h-[28px]">
+  {/* Klizni indikator */}
+  <div
+    className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 
+      ${selectedLanguage === "Crnogorski" ? "left-[3px]" : "right-[3px]"} 
+      w-[60px] bg-gray-400`}
+  />
+  {/* Dugmad */}
+  <button
+    onClick={() => setSelectedLanguage("Crnogorski")}
+    className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
+      ${selectedLanguage === "Crnogorski" ? "text-white" : "text-gray-600 hover:text-gray-800"}`}
+  >
+    Crnogorski
+  </button>
+  <button
+    onClick={() => setSelectedLanguage("English")}
+    className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
+      ${selectedLanguage === "English" ? "text-white" : "text-gray-600 hover:text-gray-800"}`}
+  >
+    English
+  </button>
+</div>
       </header>
 
 
