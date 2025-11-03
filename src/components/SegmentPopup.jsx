@@ -40,19 +40,27 @@ const SegmentPopup = ({ segmentKey, onClose }) => {
           <strong>Procijenjena vrijednost: </strong>
           {formatValue(data.vrijednost)}
         </div>
-
-        <div className="mt-4 flex flex-col md:flex-row justify-between items-center gap-2">
-          <a
-            href="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition"
-          >
-            🎥 Video
-          </a>
-          <button className="w-full bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition">
-            📄 Dokumentacija
-          </button>
+       <div className="mt-4 flex flex-col md:flex-row justify-between items-center gap-2">
+          {data.video && (
+            <a
+              href={data.video}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition"
+            >
+              🎥 Video
+            </a>
+          )}
+          {data.pdf && (
+            <a
+              href={data.pdf}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition"
+            >
+              📄 Dokumentacija
+            </a>
+          )}
           <button
             onClick={onClose}
             className="w-full md:w-auto bg-white border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition"
