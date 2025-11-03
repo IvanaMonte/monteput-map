@@ -34,10 +34,10 @@ export default function InteractiveMap() {
     const width = window.innerWidth;
     if (width < 768) {
       // Mobile: Allow more zooming for better detail viewing
-      return { MIN_ZOOM: 0.5, MAX_ZOOM: 8 };
+    return { MIN_ZOOM: 1.8, MAX_ZOOM: 3.0 };
     } else {
       // Desktop: Standard zoom range
-      return { MIN_ZOOM: 1, MAX_ZOOM: 5 };
+    return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.6 };
     }
   };
 
