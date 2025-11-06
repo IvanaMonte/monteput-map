@@ -402,7 +402,7 @@ export default function InteractiveMap() {
 
       {/* MAPA */}
       <main
-        className={`flex-1 flex items-center justify-center overflow-hidden transition-all duration-300 ${activeSegment ? 'mb-80 md:mt-[60px]' : 'mt-[80px] sm:mt-[90px] md:mt-[60px]'}`}
+        className={`flex-1 flex items-center justify-center overflow-hidden transition-all duration-300 ${activeSegment ? 'mb-80 md:mb-0 md:mt-[60px]' : 'mt-[80px] sm:mt-[90px] md:mt-[60px]'}`}
         onMouseMove={(e) => {
           // === Tooltip praćenje ===
           if (!isPanning) {
