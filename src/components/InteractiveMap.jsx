@@ -189,25 +189,22 @@ export default function InteractiveMap() {
         if (activeSegment) {
           if (key === activeSegment) {
             // ✅ Aktivni segment
-            el.setAttribute("stroke-width", "8");
-            el.setAttribute("opacity", "1");
-            el.style.filter = "brightness(3) drop-shadow(0 0 4px #EF4444) drop-shadow(0 0 4px #EF4444)"; // Double glow
+            el.style.transform = "scale(1.0)";
             el.style.transformOrigin = "center";
+            el.style.transition = "all 0.2s ease-out";
           } else {
             // ❌ Neaktivni segmenti - potamni i smanji
             el.setAttribute("opacity", "0.5");
             el.setAttribute("stroke-width", "1");
             el.style.filter = "brightness(0.1) grayscale(0.1)";
-
           }
         } else if (hovered === key) {
-          // 🟡 Hover
-          el.removeAttribute("fill");
-          el.removeAttribute("stroke");
+          // 🟡 Hover 
           el.setAttribute("opacity", "1");
-          el.setAttribute("stroke-width", "4");
-          el.style.filter = "brightness(1.3)";
-          el.style.transform = "scale(1)";
+          el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.3))"; // Only shadow, no color change
+          el.style.transform = "scale(1.02)";
+          el.style.transformOrigin = "center";
+          el.style.transition = "all 0.2s ease-out";
         } else {
           // 🔵 Normalno stanje - potpuno resetovanje
           el.removeAttribute("fill");
