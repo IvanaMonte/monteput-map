@@ -106,7 +106,7 @@ export const TABLE_DATA = {
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
     pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
   },
-  "A1-A2-6": {
+  "A1-6": {
     oznaka: "6",
     naziv: "Tološi - Virpazar",
     duzinaKm: 40.0,
@@ -117,7 +117,7 @@ export const TABLE_DATA = {
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
     pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
   },
-  "A1-A2-8": {
+  "A1-7": {
     oznaka: "8",
     naziv: "Virpazar - Zaljevo",
     duzinaKm: 23.0,
@@ -205,14 +205,14 @@ export const TABLE_DATA = {
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
     pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
   },
-  "B2-2": {
-    oznaka: "2",
-    naziv: "Pljevlja - granica sa Bosnom i Hercegovinom",
-    duzinaKm: 30.0,
-    vrijednost: "400000000",
-    idejno: "revizija u toku",
-    idejni: "raspisivanje tendera 2025-2026.",
-    glavni: "raspisivanje tendera 2029.",
+    "B1-4": {
+    oznaka: "4",
+    naziv: "Luštica - Granica sa Hrvatskom",
+    duzinaKm: 19.0,
+    vrijednost: "575000000",
+    idejno: "završeno",
+    idejni: "-",
+    glavni: "-",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
     pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
   },
@@ -224,6 +224,17 @@ export const TABLE_DATA = {
     idejno: "revizija u toku",
     idejni: "raspisivanje tendera 2025-2026.",
     glavni: "raspisivanje tendera 2028.",
+    video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
+    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+  },
+    "B2-2": {
+    oznaka: "2",
+    naziv: "Pljevlja - granica sa Bosnom i Hercegovinom",
+    duzinaKm: 30.0,
+    vrijednost: "400000000",
+    idejno: "revizija u toku",
+    idejni: "raspisivanje tendera 2025-2026.",
+    glavni: "raspisivanje tendera 2029.",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
     pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
   },

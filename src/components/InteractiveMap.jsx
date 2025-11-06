@@ -37,7 +37,7 @@ export default function InteractiveMap() {
     return { MIN_ZOOM: 2.5, MAX_ZOOM: 5.0 };
     } else {
       // Desktop: Standard zoom range
-    return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.6 };
+    return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.9 };
     }
   };
 
