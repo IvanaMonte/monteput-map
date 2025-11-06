@@ -35,10 +35,10 @@ export default function InteractiveMap() {
     const width = window.innerWidth;
     if (width < 768) {
       // Mobile: Allow more zooming for better detail viewing
-    return { MIN_ZOOM: 2.5, MAX_ZOOM: 5.0 };
+      return { MIN_ZOOM: 2.5, MAX_ZOOM: 5.0 };
     } else {
       // Desktop: Standard zoom range
-    return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.9 };
+      return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.9 };
     }
   };
 
@@ -135,8 +135,8 @@ export default function InteractiveMap() {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgLegend, 'image/svg+xml');
     return svgDoc.documentElement;
-  }; 
-  
+  };
+
   // === Aktivacija hover/klik događaja ===
   useEffect(() => {
     const svg = svgRef.current;
@@ -366,7 +366,7 @@ export default function InteractiveMap() {
   return (
     <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* HEADER */}
-      <header className="fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5">
+      <header className={`fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5 transition-transform duration-300 ${activeSegment ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'}`}>
         {/* Lijevo – logo */}
         <img
           src={montePutLogo}
@@ -374,35 +374,35 @@ export default function InteractiveMap() {
           className="h-7 sm:h-8 object-contain"
         />
 
-{/* Jezički toggle */}
-<div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[130px] h-[28px]">
-  {/* Klizni indikator */}
-  <div
-    className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 
+        {/* Jezički toggle */}
+        <div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[130px] h-[28px]">
+          {/* Klizni indikator */}
+          <div
+            className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 
       ${selectedLanguage === "Crnogorski" ? "left-[3px]" : "right-[3px]"} 
       w-[60px] bg-gray-400`}
-  />
-  {/* Dugmad */}
-  <button
-    onClick={() => setSelectedLanguage("Crnogorski")}
-    className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
+          />
+          {/* Dugmad */}
+          <button
+            onClick={() => setSelectedLanguage("Crnogorski")}
+            className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
       ${selectedLanguage === "Crnogorski" ? "text-white" : "text-gray-600 hover:text-gray-800"}`}
-  >
-    Crnogorski
-  </button>
-  <button
-    onClick={() => setSelectedLanguage("English")}
-    className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
+          >
+            Crnogorski
+          </button>
+          <button
+            onClick={() => setSelectedLanguage("English")}
+            className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
       ${selectedLanguage === "English" ? "text-white" : "text-gray-600 hover:text-gray-800"}`}
-  >
-    English
-  </button>
-</div>
+          >
+            English
+          </button>
+        </div>
       </header>
 
       {/* MAPA */}
       <main
-        className="flex-1 mt-[80px] sm:mt-[90px] md:mt-[60px] flex items-center justify-center overflow-hidden"
+        className={`flex-1 flex items-center justify-center overflow-hidden transition-all duration-300 ${activeSegment ? 'mb-60 md:mt-[60px]' : 'mt-[80px] sm:mt-[90px] md:mt-[60px]'}`}
         onMouseMove={(e) => {
           // === Tooltip praćenje ===
           if (!isPanning) {
@@ -413,7 +413,7 @@ export default function InteractiveMap() {
         }}
       >
         <div
-          className="relative w-full h-full flex items-start justify-center map-container mb-20"
+          className={`relative w-full h-full flex justify-center map-container transition-all duration-300 ${activeSegment ? 'items-start pt-2 mb-12' : 'items-start pt-4 mb-16'}`}
         >
           <svg
             ref={svgRef}
@@ -463,13 +463,13 @@ export default function InteractiveMap() {
           </AnimatePresence>
 
           {/* Popup */}
-{activeSegment && (
-  <SegmentPopup
-    segmentKey={activeSegment}
-    onClose={() => setActiveSegment(null)}
-    selectedLanguage={selectedLanguage}   // ⬅️ ovo dodaj
-  />
-)}
+          {activeSegment && (
+            <SegmentPopup
+              segmentKey={activeSegment}
+              onClose={() => setActiveSegment(null)}
+              selectedLanguage={selectedLanguage}   // ⬅️ ovo dodaj
+            />
+          )}
 
           {/* QR kod */}
           <div className="absolute bottom-6 right-6 z-50 hidden md:block">
@@ -577,7 +577,7 @@ export default function InteractiveMap() {
                 onClick={() => setShowLegendDialog(false)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
-                 {translations[selectedLanguage].close}
+                {translations[selectedLanguage].close}
               </button>
             </div>
           </div>
