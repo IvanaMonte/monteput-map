@@ -5,6 +5,7 @@ import SegmentPopup from "./SegmentPopup";
 import { motion, AnimatePresence } from "framer-motion";
 import QrCodeBox from "./QrCodeBox";
 import montePutLogo from "../assets/monteput-logo.svg";
+import { translations } from "../i18n";
 
 export default function InteractiveMap() {
   const [activeSegment, setActiveSegment] = useState(null);
@@ -131,11 +132,12 @@ export default function InteractiveMap() {
         </g>
       </svg>
     `;
-
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgLegend, 'image/svg+xml');
     return svgDoc.documentElement;
-  };  // === Aktivacija hover/klik događaja ===
+  }; 
+  
+  // === Aktivacija hover/klik događaja ===
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
@@ -398,9 +400,6 @@ export default function InteractiveMap() {
 </div>
       </header>
 
-
-
-
       {/* MAPA */}
       <main
         className="flex-1 mt-[80px] sm:mt-[90px] md:mt-[60px] flex items-center justify-center overflow-hidden"
@@ -491,7 +490,7 @@ export default function InteractiveMap() {
           >
             {/* Dialog Header */}
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Legenda mape</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{translations[selectedLanguage].legendTitle}</h3>
               <button
                 onClick={() => setShowLegendDialog(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -578,7 +577,7 @@ export default function InteractiveMap() {
                 onClick={() => setShowLegendDialog(false)}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
-                Zatvori
+                 {translations[selectedLanguage].close}
               </button>
             </div>
           </div>
@@ -616,13 +615,13 @@ export default function InteractiveMap() {
                 <circle cx="9" cy="12" r="1" fill="currentColor" />
                 <circle cx="15" cy="12" r="1" fill="currentColor" />
               </svg>
-              <span className="font-semibold">Legenda</span>
+              <span className="font-semibold">  {translations[selectedLanguage].legendButton}</span>
             </button>
           </div>
 
           {/* Copyright - Hidden on mobile, shown on desktop */}
           <div className="hidden sm:block text-center flex-1 mx-4 text-gray-600 text-sm">
-            © {new Date().getFullYear()} Monteput d.o.o. Sva prava zadržana.
+            © {new Date().getFullYear()} Monteput d.o.o.  {translations[selectedLanguage].companyRights}
           </div>
 
           {/* Mobile copyright - bottom row */}

@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import { TABLE_DATA,TABLE_DATA_EN  } from "../data/svgMapData";
+import { translations } from "../i18n";
+
 
 const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) => {
 
@@ -75,13 +77,13 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
         </div>
 
         <div className="space-y-1.5">
-          <PopupRow label="Idejno rješenje" value={data.idejno} />
-          <PopupRow label="Idejni projekat" value={data.idejni} />
-          <PopupRow label="Glavni projekat" value={data.glavni} />
+          <PopupRow label={translations[selectedLanguage].ideaSolution} value={data.idejno} />
+          <PopupRow label={translations[selectedLanguage].ideaProject} value={data.idejni} />
+          <PopupRow label={translations[selectedLanguage].mainProject} value={data.glavni} />
         </div>
 
         <div className="mt-3 bg-gray-100 p-2.5 rounded-lg text-center text-gray-800 text-xs">
-          <strong>Procijenjena vrijednost: </strong>
+          <strong>{translations[selectedLanguage].valueLabel}: </strong>
           {formatValue(data.vrijednost)}
         </div>
 
@@ -93,7 +95,7 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
               rel="noopener noreferrer"
               className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-1.5 text-xs hover:bg-gray-100 transition"
             >
-              🎥 Video
+              {translations[selectedLanguage].video}
             </a>
           )}
           {data.pdf && (
@@ -103,7 +105,7 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
               rel="noopener noreferrer"
               className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-1.5 text-xs hover:bg-gray-100 transition"
             >
-              📄 Dokumentacija
+              {translations[selectedLanguage].docs}
             </a>
           )}
           <button
@@ -130,9 +132,9 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
           <span className="text-gray-600 text-sm">{data.duzinaKm} km</span>
         </div>
 
-        <PopupRow label="Idejno rješenje" value={data.idejno} />
-        <PopupRow label="Idejni projekat" value={data.idejni} />
-        <PopupRow label="Glavni projekat" value={data.glavni} />
+          <PopupRow label={translations[selectedLanguage].ideaSolution} value={data.idejno} />
+          <PopupRow label={translations[selectedLanguage].ideaProject} value={data.idejni} />
+          <PopupRow label={translations[selectedLanguage].mainProject} value={data.glavni} />
 
         <div className="mt-4 bg-gray-100 p-3 rounded-lg text-center text-gray-800 text-sm">
           <strong>Procijenjena vrijednost: </strong>
@@ -147,7 +149,7 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
               rel="noopener noreferrer"
               className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition"
             >
-              🎥 Video
+              {translations[selectedLanguage].video}
             </a>
           )}
           {data.pdf && (
@@ -157,7 +159,7 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
               rel="noopener noreferrer"
               className="w-full text-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2 text-sm hover:bg-gray-100 transition"
             >
-              📄 Dokumentacija
+              {translations[selectedLanguage].docs}
             </a>
           )}
           <button
