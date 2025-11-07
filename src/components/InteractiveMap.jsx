@@ -31,16 +31,20 @@ export default function InteractiveMap() {
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
   // === Dynamic zoom limits based on screen size ===
-  const getZoomLimits = () => {
-    const width = window.innerWidth;
-    if (width < 768) {
-      // Mobile: Allow more zooming for better detail viewing
-      return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
-    } else {
-      // Desktop: Standard zoom range
-      return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.9 };
-    }
-  };
+const getZoomLimits = () => {
+  const width = window.innerWidth;
+  if (width < 768) {
+    // 📱 mobilni: veća početna vrijednost jer je ekran mali
+    return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
+  } else if (width < 1440) {
+    // 💻 laptop / tablet
+    return { MIN_ZOOM: 1.4, MAX_ZOOM: 6.0 };
+  } else {
+    // 🖥️ veliki ekrani
+    return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.5 };
+  }
+};
+
 
   const { MIN_ZOOM, MAX_ZOOM } = getZoomLimits();
 
@@ -321,7 +325,7 @@ export default function InteractiveMap() {
   const handleMouseUp = () => setIsPanning(false);
 
 const clampOffset = (x, y, zoom) => {
-  const svgWidth = 1650;   // iz viewBox-a  mape
+  const svgWidth = 1650;   // iz viewBox-a tvoje mape
   const svgHeight = 1280;
 
   const screenWidth = window.innerWidth;
