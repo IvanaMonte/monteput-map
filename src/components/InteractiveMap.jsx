@@ -320,12 +320,27 @@ export default function InteractiveMap() {
 
   const handleMouseUp = () => setIsPanning(false);
 
-  const clampOffset = (x, y, zoom) => {
-  const limitX = 400 * zoom; // podešava koliko se može pomjeriti horizontalno
-  const limitY = 300 * zoom; // podešava vertikalno pomjeranje
+const clampOffset = (x, y, zoom) => {
+  const svgWidth = 1650;   // iz viewBox-a  mape
+  const svgHeight = 1280;
+
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+
+  // vidljiva površina (koliko dijela SVG-a staje na ekran)
+  const visibleWidth = svgWidth / zoom;
+  const visibleHeight = svgHeight / zoom;
+
+  // polovina razlike određuje granice pomjeranja
+  const maxX = (svgWidth - visibleWidth) / 2;
+  const maxY = (svgHeight - visibleHeight) / 2;
+
+  // faktor koji blago ograničava previše pomjeranja na mobilnim uređajima
+  const deviceFactor = screenWidth < 768 ? 0.7 : 1.0;
+
   return {
-    x: Math.max(-limitX, Math.min(limitX, x)),
-    y: Math.max(-limitY, Math.min(limitY, y)),
+    x: Math.max(-maxX * deviceFactor, Math.min(maxX * deviceFactor, x)),
+    y: Math.max(-maxY * deviceFactor, Math.min(maxY * deviceFactor, y)),
   };
 };
 
