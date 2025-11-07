@@ -35,10 +35,10 @@ export default function InteractiveMap() {
     const width = window.innerWidth;
     if (width < 768) {
       // Mobile: Allow more zooming for better detail viewing
-      return { MIN_ZOOM: 2.5, MAX_ZOOM: 5.0 };
+      return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
     } else {
       // Desktop: Standard zoom range
-      return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.9 };
+      return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.9 };
     }
   };
 
@@ -283,7 +283,8 @@ export default function InteractiveMap() {
 
       if (touchDistance > 0) {
         const scale = distance / touchDistance;
-        const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
+        // Reduce damping so pinch gestures feel more direct on mobile
+        const dampedScale = 1 + (scale - 1) * 0.85;
         setZoom((prev) => {
           const next = prev * dampedScale;
           return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
@@ -297,7 +298,7 @@ export default function InteractiveMap() {
       const dx = touch.clientX - lastTouchPos.x;
       const dy = touch.clientY - lastTouchPos.y;
 
-      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setOffset((prev) => clampOffset(prev.x + dx, prev.y + dy, zoom));
       setLastTouchPos({ x: touch.clientX, y: touch.clientY });
     }
   };
@@ -319,12 +320,21 @@ export default function InteractiveMap() {
 
   const handleMouseUp = () => setIsPanning(false);
 
+  const clampOffset = (x, y, zoom) => {
+  const limitX = 400 * zoom; // podešava koliko se može pomjeriti horizontalno
+  const limitY = 300 * zoom; // podešava vertikalno pomjeranje
+  return {
+    x: Math.max(-limitX, Math.min(limitX, x)),
+    y: Math.max(-limitY, Math.min(limitY, y)),
+  };
+};
+
   // === Mouse move handler for SVG panning ===
   const handleSvgMouseMove = (e) => {
     if (isPanning) {
       const dx = e.clientX - lastMousePos.x;
       const dy = e.clientY - lastMousePos.y;
-      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+     setOffset((prev) => clampOffset(prev.x + dx, prev.y + dy, zoom));
       setLastMousePos({ x: e.clientX, y: e.clientY });
     }
   };
@@ -366,7 +376,7 @@ export default function InteractiveMap() {
   }, [activeSegment]);
 
   return (
-    <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
+    <div className="w-screen h-screen bg-[#EFEFEF] flex flex-col overflow-hidden">
       {/* HEADER */}
       <header className={`fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5 transition-transform duration-300 ${activeSegment ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'}`}>
         {/* Lijevo – logo */}
