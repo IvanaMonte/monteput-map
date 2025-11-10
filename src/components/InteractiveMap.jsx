@@ -194,11 +194,25 @@ export default function InteractiveMap() {
             el.style.transition = "all 0.2s ease-out";
           } else {
             // ❌ Neaktivni segmenti - potamni i smanji (Mobile-compatible)
-            el.setAttribute("opacity", "0.5");
-            el.setAttribute("stroke-width", "1");
-            el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
-            el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
-            el.style.mixBlendMode = "multiply";
+            const isIOS = /iPad|iPhone|iPod|iOS/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+            if (isIOS) {
+              // For ALL iOS browsers: Force gray color directly + strong opacity
+              el.setAttribute("fill", "#808080");
+              el.setAttribute("stroke", "#606060");
+              el.setAttribute("opacity", "0.4");
+              el.style.filter = "none"; // Disable problematic filters on iOS
+              // Add backup styling for stubborn cases
+              el.style.backgroundColor = "#808080";
+              el.style.color = "#808080";
+            } else {
+              el.setAttribute("opacity", "0.5");
+              el.setAttribute("stroke-width", "1");
+              el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
+              el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
+              el.style.mixBlendMode = "multiply";
+            }
           }
         } else if (hovered === key) {
           // 🟡 Hover 
