@@ -31,19 +31,19 @@ export default function InteractiveMap() {
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 });
 
   // === Dynamic zoom limits based on screen size ===
-const getZoomLimits = () => {
-  const width = window.innerWidth;
-  if (width < 768) {
-    // 📱 mobilni: veća početna vrijednost jer je ekran mali
-    return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
-  } else if (width < 1440) {
-    // 💻 laptop / tablet
-    return { MIN_ZOOM: 1.4, MAX_ZOOM: 6.0 };
-  } else {
-    // 🖥️ veliki ekrani
-    return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.5 };
-  }
-};
+  const getZoomLimits = () => {
+    const width = window.innerWidth;
+    if (width < 768) {
+      // 📱 mobilni: veća početna vrijednost jer je ekran mali
+      return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
+    } else if (width < 1440) {
+      // 💻 laptop / tablet
+      return { MIN_ZOOM: 1.4, MAX_ZOOM: 6.0 };
+    } else {
+      // 🖥️ veliki ekrani
+      return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.5 };
+    }
+  };
 
 
   const { MIN_ZOOM, MAX_ZOOM } = getZoomLimits();
@@ -203,13 +203,13 @@ const getZoomLimits = () => {
 
             if (isIOS) {
               // For ALL iOS browsers: Force gray color directly + strong opacity
-              el.setAttribute("fill", "#808080");
-              el.setAttribute("stroke", "#606060");
-              el.setAttribute("opacity", "0.4");
+              el.setAttribute("fill", "#878787");
+              el.setAttribute("stroke-width", "1");
+              el.setAttribute("opacity", "0.5");
               el.style.filter = "none"; // Disable problematic filters on iOS
               // Add backup styling for stubborn cases
-              el.style.backgroundColor = "#808080";
-              el.style.color = "#808080";
+              el.style.backgroundColor = "#878787";
+              el.style.color = "#878787";
             } else {
               el.setAttribute("opacity", "0.5");
               el.setAttribute("stroke-width", "1");
@@ -338,36 +338,36 @@ const getZoomLimits = () => {
 
   const handleMouseUp = () => setIsPanning(false);
 
-const clampOffset = (x, y, zoom) => {
-  const svgWidth = 1650;   // iz viewBox-a tvoje mape
-  const svgHeight = 1280;
+  const clampOffset = (x, y, zoom) => {
+    const svgWidth = 1650;   // iz viewBox-a tvoje mape
+    const svgHeight = 1280;
 
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
 
-  // vidljiva površina (koliko dijela SVG-a staje na ekran)
-  const visibleWidth = svgWidth / zoom;
-  const visibleHeight = svgHeight / zoom;
+    // vidljiva površina (koliko dijela SVG-a staje na ekran)
+    const visibleWidth = svgWidth / zoom;
+    const visibleHeight = svgHeight / zoom;
 
-  // polovina razlike određuje granice pomjeranja
-  const maxX = (svgWidth - visibleWidth) / 2;
-  const maxY = (svgHeight - visibleHeight) / 2;
+    // polovina razlike određuje granice pomjeranja
+    const maxX = (svgWidth - visibleWidth) / 2;
+    const maxY = (svgHeight - visibleHeight) / 2;
 
-  // faktor koji blago ograničava previše pomjeranja na mobilnim uređajima
-  const deviceFactor = screenWidth < 768 ? 0.7 : 1.0;
+    // faktor koji blago ograničava previše pomjeranja na mobilnim uređajima
+    const deviceFactor = screenWidth < 768 ? 0.7 : 1.0;
 
-  return {
-    x: Math.max(-maxX * deviceFactor, Math.min(maxX * deviceFactor, x)),
-    y: Math.max(-maxY * deviceFactor, Math.min(maxY * deviceFactor, y)),
+    return {
+      x: Math.max(-maxX * deviceFactor, Math.min(maxX * deviceFactor, x)),
+      y: Math.max(-maxY * deviceFactor, Math.min(maxY * deviceFactor, y)),
+    };
   };
-};
 
   // === Mouse move handler for SVG panning ===
   const handleSvgMouseMove = (e) => {
     if (isPanning) {
       const dx = e.clientX - lastMousePos.x;
       const dy = e.clientY - lastMousePos.y;
-     setOffset((prev) => clampOffset(prev.x + dx, prev.y + dy, zoom));
+      setOffset((prev) => clampOffset(prev.x + dx, prev.y + dy, zoom));
       setLastMousePos({ x: e.clientX, y: e.clientY });
     }
   };
