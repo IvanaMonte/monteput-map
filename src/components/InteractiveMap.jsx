@@ -209,15 +209,16 @@ export default function InteractiveMap() {
           el.style.transition = "all 0.2s ease-out";
         } else {
           // 🔵 Normalno stanje - potpuno resetovanje
-          el.removeAttribute("fill");
-          el.removeAttribute("stroke");
-          el.removeAttribute("stroke-width");
-          el.removeAttribute("opacity");
+          el.style.fill = "";
+          el.style.stroke = "";
+          el.style.strokeWidth = ""; // Use camelCase for JS style property
+          el.style.opacity = "";
           el.style.filter = "";
-          el.style.transform = "scale(1)";
-          // Clear mobile Safari specific styles
+          el.style.transform = ""; // Remove the specific scale transform
           el.style.webkitFilter = "";
           el.style.mixBlendMode = "";
+          // Clear the hardware acceleration workaround if it's no longer needed for the inactive state
+          el.style.transform = "";
         }
       });
     });
