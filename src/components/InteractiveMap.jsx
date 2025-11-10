@@ -194,32 +194,30 @@ export default function InteractiveMap() {
             el.style.transition = "all 0.2s ease-out";
           } else {
             // ❌ Neaktivni segmenti - potamni i smanji (Mobile-compatible)
-            el.style.opacity = '0.5';
-            el.style.strokeWidth = '1px';
+            el.setAttribute("opacity", "0.5");
+            el.setAttribute("stroke-width", "1");
             el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
             el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
             el.style.mixBlendMode = "multiply";
-            el.style.transform = "translateZ(0)";
           }
         } else if (hovered === key) {
           // 🟡 Hover 
-          el.style.opacity = 1;
+          el.setAttribute("opacity", "1");
           el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.3))"; // Only shadow, no color change
           el.style.transform = "scale(1.02)";
           el.style.transformOrigin = "center";
           el.style.transition = "all 0.2s ease-out";
         } else {
           // 🔵 Normalno stanje - potpuno resetovanje
-          el.style.fill = "";
-          el.style.stroke = "";
-          el.style.strokeWidth = ""; // Use camelCase for JS style property
-          el.style.opacity = "";
+          el.removeAttribute("fill");
+          el.removeAttribute("stroke");
+          el.removeAttribute("stroke-width");
+          el.removeAttribute("opacity");
           el.style.filter = "";
-          el.style.transform = ""; // Remove the specific scale transform
+          el.style.transform = "scale(1)";
+          // Clear mobile Safari specific styles
           el.style.webkitFilter = "";
           el.style.mixBlendMode = "";
-          // Clear the hardware acceleration workaround if it's no longer needed for the inactive state
-          el.style.transform = "";
         }
       });
     });
