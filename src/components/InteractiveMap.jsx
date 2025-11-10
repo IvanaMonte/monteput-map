@@ -34,17 +34,13 @@ export default function InteractiveMap() {
   const getZoomLimits = () => {
     const width = window.innerWidth;
     if (width < 768) {
-      // 📱 mobilni: veća početna vrijednost jer je ekran mali
-      return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
-    } else if (width < 1440) {
-      // 💻 laptop / tablet
-      return { MIN_ZOOM: 1.4, MAX_ZOOM: 6.0 };
+      // Mobile: Allow more zooming for better detail viewing
+      return { MIN_ZOOM: 2.5, MAX_ZOOM: 5.0 };
     } else {
-      // 🖥️ veliki ekrani
-      return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.5 };
+      // Desktop: Standard zoom range
+      return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.9 };
     }
   };
-
 
   const { MIN_ZOOM, MAX_ZOOM } = getZoomLimits();
 
@@ -197,21 +193,20 @@ export default function InteractiveMap() {
             el.style.transformOrigin = "center";
             el.style.transition = "all 0.2s ease-out";
           } else {
-            // ❌ Neaktivni segmenti - potamni i smanji (Mobile-compatible)
-            const isIOS = /iPad|iPhone|iPod|iOS/.test(navigator.userAgent) ||
+            // ❌ Neaktivni segmenti - iOS compatible solution
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
               (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
             if (isIOS) {
-              // For ALL iOS browsers: Force gray color directly + strong opacity
-              el.setAttribute("fill", "#878787");
-              el.setAttribute("stroke-width", "1");
-              el.setAttribute("opacity", "0.5");
-              el.style.filter = "none"; // Disable problematic filters on iOS
-              // Add backup styling for stubborn cases
-              el.style.backgroundColor = "#878787";
-              el.style.color = "#878787";
+              // iOS-specific: Direct SVG attribute manipulation
+              el.setAttribute("fill", "#808080");     // Forces gray fill color directly
+              el.setAttribute("stroke", "#606060");   // Forces darker gray stroke
+              el.setAttribute("opacity", "0.3");      // Reduced opacity for better visibility
+              el.setAttribute("stroke-width", "1");   // Thinner stroke
+              el.style.filter = "none"; // Disable filters on iOS
             } else {
-              el.setAttribute("opacity", "0.5");
+              // Desktop/Android: Use advanced CSS filters
+              el.setAttribute("opacity", "0.3");
               el.setAttribute("stroke-width", "1");
               el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
               el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
@@ -301,8 +296,7 @@ export default function InteractiveMap() {
 
       if (touchDistance > 0) {
         const scale = distance / touchDistance;
-        // Reduce damping so pinch gestures feel more direct on mobile
-        const dampedScale = 1 + (scale - 1) * 0.85;
+        const dampedScale = 1 + (scale - 1) * 0.5; // Dampen the zoom for smoother control
         setZoom((prev) => {
           const next = prev * dampedScale;
           return Math.max(MIN_ZOOM, Math.min(next, MAX_ZOOM));
@@ -316,7 +310,7 @@ export default function InteractiveMap() {
       const dx = touch.clientX - lastTouchPos.x;
       const dy = touch.clientY - lastTouchPos.y;
 
-      setOffset((prev) => clampOffset(prev.x + dx, prev.y + dy, zoom));
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
       setLastTouchPos({ x: touch.clientX, y: touch.clientY });
     }
   };
@@ -338,36 +332,12 @@ export default function InteractiveMap() {
 
   const handleMouseUp = () => setIsPanning(false);
 
-  const clampOffset = (x, y, zoom) => {
-    const svgWidth = 1650;   // iz viewBox-a tvoje mape
-    const svgHeight = 1280;
-
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
-
-    // vidljiva površina (koliko dijela SVG-a staje na ekran)
-    const visibleWidth = svgWidth / zoom;
-    const visibleHeight = svgHeight / zoom;
-
-    // polovina razlike određuje granice pomjeranja
-    const maxX = (svgWidth - visibleWidth) / 2;
-    const maxY = (svgHeight - visibleHeight) / 2;
-
-    // faktor koji blago ograničava previše pomjeranja na mobilnim uređajima
-    const deviceFactor = screenWidth < 768 ? 0.7 : 1.0;
-
-    return {
-      x: Math.max(-maxX * deviceFactor, Math.min(maxX * deviceFactor, x)),
-      y: Math.max(-maxY * deviceFactor, Math.min(maxY * deviceFactor, y)),
-    };
-  };
-
   // === Mouse move handler for SVG panning ===
   const handleSvgMouseMove = (e) => {
     if (isPanning) {
       const dx = e.clientX - lastMousePos.x;
       const dy = e.clientY - lastMousePos.y;
-      setOffset((prev) => clampOffset(prev.x + dx, prev.y + dy, zoom));
+      setOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
       setLastMousePos({ x: e.clientX, y: e.clientY });
     }
   };
@@ -409,7 +379,7 @@ export default function InteractiveMap() {
   }, [activeSegment]);
 
   return (
-    <div className="w-screen h-screen bg-[#EFEFEF] flex flex-col overflow-hidden">
+    <div className="w-screen h-screen bg-gray-100 flex flex-col overflow-hidden">
       {/* HEADER */}
       <header className={`fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5 transition-transform duration-300 ${activeSegment ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'}`}>
         {/* Lijevo – logo */}
@@ -466,15 +436,16 @@ export default function InteractiveMap() {
             preserveAspectRatio="xMidYMid meet"
             className="w-full h-full touch-none"
             onWheel={handleWheel}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleSvgMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
+            // onTouchStart={handleTouchStart}
+            // onTouchMove={handleTouchMove}
+            // onTouchEnd={handleTouchEnd}
+            // onMouseDown={handleMouseDown}
+            // onMouseMove={handleSvgMouseMove}
+            // onMouseUp={handleMouseUp}
+            // onMouseLeave={handleMouseUp}
             style={{
-              transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+              // transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+              transform: `scale(${zoom})`,
               transformOrigin: "center",
               transition: isPanning ? "none" : "transform 0.2s ease-out",
               cursor: isPanning ? "grabbing" : "grab",
