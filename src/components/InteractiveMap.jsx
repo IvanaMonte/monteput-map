@@ -194,11 +194,12 @@ export default function InteractiveMap() {
             el.style.transition = "all 0.2s ease-out";
           } else {
             // ❌ Neaktivni segmenti - potamni i smanji (Mobile-compatible)
-            el.style.opacity = 0.5;
-            el.style.strokeWidth = 1;
+            el.style.opacity = '0.5';
+            el.style.strokeWidth = '1px';
             el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
             el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
             el.style.mixBlendMode = "multiply";
+            el.style.transform = "translateZ(0)";
           }
         } else if (hovered === key) {
           // 🟡 Hover 
