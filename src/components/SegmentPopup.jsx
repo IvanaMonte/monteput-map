@@ -137,7 +137,7 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
           <PopupRow label={translations[selectedLanguage].mainProject} value={data.glavni} />
 
         <div className="mt-4 bg-gray-100 p-3 rounded-lg text-center text-gray-800 text-sm">
-          <strong>Procijenjena vrijednost: </strong>
+          <strong> {translations[selectedLanguage].valueLabel} </strong>
           {formatValue(data.vrijednost)}
         </div>
 

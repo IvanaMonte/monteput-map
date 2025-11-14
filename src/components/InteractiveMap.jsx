@@ -443,9 +443,7 @@ export default function InteractiveMap() {
           }
         }}
       >
-        <div
-          className={`relative w-full h-full flex justify-center map-container transition-all duration-300 ${activeSegment ? 'items-start pt-2 mb-12' : 'items-start pt-4 mb-16'}`}
-        >
+        <div className={`relative w-full h-full flex justify-center map-container transition-all duration-300 ${activeSegment ? 'items-start pt-2 mb-12' : 'items-start pt-4 mb-16'}`}      >
           <svg
             ref={svgRef}
             viewBox="0 0 2290 1280"
@@ -472,7 +470,7 @@ export default function InteractiveMap() {
 
           {/* Tooltip */}
           <AnimatePresence>
-            {hovered && (
+            {hovered && !activeSegment && window.innerWidth >= 768 && (
               <motion.div
                 key={hovered}
                 initial={{ opacity: 0, y: -5 }}
