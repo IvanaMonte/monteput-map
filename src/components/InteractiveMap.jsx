@@ -12,6 +12,39 @@ export default function InteractiveMap() {
   const [hovered, setHovered] = useState(null);
   const [selectedLanguage, setSelectedLanguage] = useState("Crnogorski");
   const [showLegendDialog, setShowLegendDialog] = useState(false);
+    // koja faza projekta je trenutno aktivna za bojenje
+  // vrijednosti: "idejno" | "idejni" | "glavni"
+  const [phaseFilter, setPhaseFilter] = useState(null);
+
+const getPhaseStatusColor = (segmentKey) => {
+  if (!phaseFilter) return null;
+
+  const row = TABLE_DATA[segmentKey];
+  if (!row) return null;
+
+  let status = "";
+  if (phaseFilter === "idejno") status = row.idejno;
+  else if (phaseFilter === "idejni") status = row.idejni;
+  else if (phaseFilter === "glavni") status = row.glavni;
+
+  if (!status) return "#9CA3AF"; // nema podataka → siva
+
+  const v = status.toLowerCase();
+
+  // 🟢 završeno
+  if (v.includes("zavr")) return "#22C55E";
+
+  // 🟡 u toku / revizija / izrada
+  if (v.includes("u toku") || v.includes("revizija") || v.includes("izrada"))
+    return "#EAB308";
+
+  // 🔴 planirano / tender
+  if (v.includes("tender") || v.includes("raspisivanje") || v.includes("plan"))
+    return "#DC2626";
+
+  // ⚪ fallback: nema podataka
+  return "#9CA3AF";
+};
 
   const svgRef = useRef(null);
 
@@ -150,17 +183,33 @@ export default function InteractiveMap() {
 
     Object.entries(SEGMENT_IDS).forEach(([key, ids]) => {
       ids.forEach((id) => {
-        const el = svg.querySelector(`#${CSS.escape(id)}`);
-        if (!el) return;
+let el = svg.querySelector(`#${CSS.escape(id)}`);
+if (!el) return;
 
-        el.style.cursor = "pointer";
+// Ako je grupa — uzmi path unutra za klik
+let clickTarget = el;
+if (el.tagName.toLowerCase() === "g") {
+    const shape = el.querySelector("path, line, polyline");
+    if (shape) clickTarget = shape;
+}
 
-        const onEnter = () => setHovered(key);
-        const onLeave = () => setHovered(null);
-        const onClick = (e) => {
-          e.stopPropagation();
-          setActiveSegment((prev) => (prev === key ? null : key));
-        };
+clickTarget.style.cursor = "pointer";
+clickTarget.style.pointerEvents = "stroke";
+
+const onEnter = () => setHovered(key);
+const onLeave = () => setHovered(null);
+
+const onClick = (e) => {
+    e.stopPropagation();
+    setActiveSegment((prev) => (prev === key ? null : key));
+};
+
+clickTarget.addEventListener("mouseenter", onEnter);
+clickTarget.addEventListener("mouseleave", onLeave);
+clickTarget.addEventListener("click", onClick);
+
+listeners.push({ el: clickTarget, onEnter, onLeave, onClick });
+
 
         el.addEventListener("mouseenter", onEnter);
         el.addEventListener("mouseleave", onLeave);
@@ -180,52 +229,97 @@ export default function InteractiveMap() {
     };
   }, []);
 
-  // === Hover efekti (posvijetli aktivni, potamni ostale) ===
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+// === Hover + bojenje po fazi (idejno / idejni / glavni) ===
+useEffect(() => {
+  const svg = svgRef.current;
+  if (!svg) return;
 
-    Object.entries(SEGMENT_IDS).forEach(([key, ids]) => {
-      ids.forEach((id) => {
-        const el = svg.querySelector(`#${CSS.escape(id)}`);
-        if (!el) return;
+  Object.entries(SEGMENT_IDS).forEach(([key, ids]) => {
+    ids.forEach((id) => {
+      const el = svg.querySelector(`#${CSS.escape(id)}`);
+      if (!el) return;
 
-        if (activeSegment) {
-          if (key === activeSegment) {
-            // ✅ Aktivni segment
-            el.style.transform = "scale(1.0)";
-            el.style.transformOrigin = "center";
-            el.style.transition = "all 0.2s ease-out";
-          } else {
-            // ❌ Neaktivni segmenti - potamni i smanji (Mobile-compatible)
-            el.setAttribute("opacity", "0.5");
-            el.setAttribute("stroke-width", "1");
-            el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
-            el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
-            el.style.mixBlendMode = "multiply";
-          }
-        } else if (hovered === key) {
-          // 🟡 Hover 
-          el.setAttribute("opacity", "1");
-          el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.3))"; // Only shadow, no color change
+      // ciljamo linije dionice (path/line/polyline), ne krugove i tekst
+      const shapes =
+        el.tagName === "path" ||
+        el.tagName === "line" ||
+        el.tagName === "polyline"
+          ? [el]
+          : Array.from(el.querySelectorAll("path, line, polyline"));
+
+      const baseColor = getPhaseStatusColor(key);
+
+      const applyBaseStyle = () => {
+        if (shapes.length && baseColor) {
+          // filter je aktivan → oboji dionicu
+          shapes.forEach((shape) => {
+            shape.style.stroke = baseColor;
+            shape.style.strokeWidth = "7";   // osnovna debljina
+            shape.style.opacity = "0.9";     // blaga, nije agresivno
+            shape.style.pointerEvents = "stroke"; // lakši klik
+          });
+        } else if (shapes.length) {
+          // nema filtera → vrati na originalnu boju iz SVG-a
+          shapes.forEach((shape) => {
+            shape.style.stroke = "";
+            shape.style.strokeWidth = "";
+            shape.style.opacity = "";
+            shape.style.pointerEvents = "";  // nazad na default
+          });
+        }
+
+        // reset efekata na grupi
+        el.style.filter = "";
+        el.style.transform = "scale(1)";
+        el.style.webkitFilter = "";
+        el.style.mixBlendMode = "";
+      };
+
+      // === STANJA: ACTIVE / HOVER / NORMAL ===
+
+      if (activeSegment) {
+        if (key === activeSegment) {
+          // ✅ AKTIVNI SEGMENT (kliknut)
+          applyBaseStyle();
+          shapes.forEach((shape) => {
+            shape.style.strokeWidth = "9";
+            shape.style.opacity = "1";
+          });
           el.style.transform = "scale(1.02)";
           el.style.transformOrigin = "center";
           el.style.transition = "all 0.2s ease-out";
+          el.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.45))";
         } else {
-          // 🔵 Normalno stanje - potpuno resetovanje
-          el.removeAttribute("fill");
-          el.removeAttribute("stroke");
-          el.removeAttribute("stroke-width");
-          el.removeAttribute("opacity");
-          el.style.filter = "";
-          el.style.transform = "scale(1)";
-          // Clear mobile Safari specific styles
-          el.style.webkitFilter = "";
-          el.style.mixBlendMode = "";
+          // 🔹 OSTALI DOK JE JEDAN AKTIVAN – prigušeni
+          applyBaseStyle();
+          shapes.forEach((shape) => {
+            if (baseColor) {
+              shape.style.opacity = "0.35";  // boja i dalje vidljiva ali utišana
+            }
+          });
+          el.style.filter = "grayscale(0.3) brightness(0.9)";
         }
-      });
+      } else if (hovered === key) {
+        // 🟡 SAMO HOVER – istakni malo
+        applyBaseStyle();
+        shapes.forEach((shape) => {
+          if (baseColor) {
+            shape.style.strokeWidth = "8";
+            shape.style.opacity = "1";
+          }
+        });
+        el.style.transform = "scale(1.02)";
+        el.style.transformOrigin = "center";
+        el.style.transition = "all 0.2s ease-out";
+        el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.35))";
+      } else {
+        // 🔵 NORMALNO STANJE
+        applyBaseStyle();
+      }
     });
-  }, [activeSegment, hovered]);
+  });
+}, [activeSegment, hovered, phaseFilter]);
+
 
   // === Zoom (točkić) - allow zoom on SVG only ===
   const handleWheel = (e) => {
@@ -397,39 +491,228 @@ export default function InteractiveMap() {
   return (
     <div className="w-screen h-screen bg-[#EFEFEF] flex flex-col overflow-hidden">
       {/* HEADER */}
-      <header className={`fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-50 flex items-center justify-between px-5 transition-transform duration-300 ${activeSegment ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'}`}>
-        {/* Lijevo – logo */}
-        <img
-          src={montePutLogo}
-          alt="Monteput Logo"
-          className="h-7 sm:h-8 object-contain"
-        />
+{/* HEADER */}
+{/* HEADER */}
+{/* <header className="fixed top-0 left-0 w-full h-[60px] bg-white shadow-sm border-b border-gray-200 z-40 flex items-center justify-between px-4 sm:px-6">
+  {/* Lijeva strana: logo + dugmad za faze */}
+  <div className="flex items-center gap-3 sm:gap-4">
+    <img
+      src={montePutLogo}
+      alt="Monteput Logo"
+      className="h-7 sm:h-8 object-contain"
+    />
 
-        {/* Jezički toggle */}
-        <div className="relative flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[130px] h-[28px]">
-          {/* Klizni indikator */}
-          <div
-            className={`absolute top-[2px] bottom-[2px] rounded-full transition-all duration-300 ease-in-out shadow-md shadow-gray-400/50 
-      ${selectedLanguage === "Crnogorski" ? "left-[3px]" : "right-[3px]"} 
-      w-[60px] bg-gray-400`}
-          />
-          {/* Dugmad */}
-          <button
-            onClick={() => setSelectedLanguage("Crnogorski")}
-            className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
-      ${selectedLanguage === "Crnogorski" ? "text-white" : "text-gray-600 hover:text-gray-800"}`}
-          >
-            Crnogorski
-          </button>
-          <button
-            onClick={() => setSelectedLanguage("English")}
-            className={`relative z-10 flex-1 text-[10px] font-medium rounded-full transition-all duration-300 
-      ${selectedLanguage === "English" ? "text-white" : "text-gray-600 hover:text-gray-800"}`}
-          >
-            English
-          </button>
-        </div>
-      </header>
+    {/* Dugmad za faze – odmah pored logoa */}
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() =>
+          setPhaseFilter((prev) => (prev === "idejno" ? null : "idejno"))
+        }
+        className={`px-3 py-1 text-[10px] sm:text-xs rounded-full border transition
+          ${
+            phaseFilter === "idejno"
+              ? "bg-green-300 text-green-900 border-green-500"
+              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+          }`}
+      >
+        Idejno rješenje
+      </button>
+
+      <button
+        onClick={() =>
+          setPhaseFilter((prev) => (prev === "idejni" ? null : "idejni"))
+        }
+        className={`px-3 py-1 text-[10px] sm:text-xs rounded-full border transition
+          ${
+            phaseFilter === "idejni"
+              ? "bg-green-300 text-green-900 border-green-500"
+              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+          }`}
+      >
+        Idejni projekat
+      </button>
+
+      <button
+        onClick={() =>
+          setPhaseFilter((prev) => (prev === "glavni" ? null : "glavni"))
+        }
+        className={`px-3 py-1 text-[10px] sm:text-xs rounded-full border transition
+          ${
+            phaseFilter === "glavni"
+              ? "bg-green-300 text-green-900 border-green-500"
+              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+          }`}
+      >
+        Glavni projekat
+      </button>
+    </div>
+  </div>
+
+  {/* Desna strana: jezički toggle */}
+  <div className="flex items-center">
+    <div className="flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[130px] h-[28px]">
+      <button
+        onClick={() => setSelectedLanguage("Crnogorski")}
+        className={`flex-1 text-[10px] font-medium rounded-full px-1 py-[2px] transition-all
+          ${
+            selectedLanguage === "Crnogorski"
+              ? "bg-gray-700 text-white"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+      >
+        Crnogorski
+      </button>
+      <button
+        onClick={() => setSelectedLanguage("English")}
+        className={`flex-1 text-[10px] font-medium rounded-full px-1 py-[2px] transition-all
+          ${
+            selectedLanguage === "English"
+              ? "bg-gray-700 text-white"
+              : "text-gray-600 hover:text-gray-800"
+          }`}
+      >
+        English
+      </button>
+    </div>
+  </div>
+{/* </header> */}
+<header className="fixed top-0 left-0 w-full bg-white shadow-sm border-b border-gray-200 z-40">
+
+  {/* RED 1 — LOGO + DESKTOP FILTERI + JEZICI */}
+  <div className="h-[60px] px-4 sm:px-6 flex items-center justify-between">
+
+    {/* Logo */}
+    <div className="flex items-center gap-3">
+      <img
+        src={montePutLogo}
+        alt="Monteput Logo"
+        className="h-7 sm:h-8 object-contain"
+      />
+
+      {/* DESKTOP FILTER BUTTONS (pored loga) */}
+      <div className="hidden sm:flex items-center gap-2">
+        <button
+          onClick={() =>
+            setPhaseFilter((prev) => (prev === "idejno" ? null : "idejno"))
+          }
+          className={`px-3 py-1 text-[12px] rounded-full border transition
+            ${
+              phaseFilter === "idejno"
+                ? "bg-green-200 text-green-900 border-green-500"
+                : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+            }`}
+        >
+          Idejno rješenje
+        </button>
+
+        <button
+          onClick={() =>
+            setPhaseFilter((prev) => (prev === "idejni" ? null : "idejni"))
+          }
+          className={`px-3 py-1 text-[12px] rounded-full border transition
+            ${
+              phaseFilter === "idejni"
+                ? "bg-green-200 text-green-900 border-green-500"
+                : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+            }`}
+        >
+          Idejni projekat
+        </button>
+
+        <button
+          onClick={() =>
+            setPhaseFilter((prev) => (prev === "glavni" ? null : "glavni"))
+          }
+          className={`px-3 py-1 text-[12px] rounded-full border transition
+            ${
+              phaseFilter === "glavni"
+                ? "bg-green-200 text-green-900 border-green-500"
+                : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+            }`}
+        >
+          Glavni projekat
+        </button>
+      </div>
+    </div>
+
+    {/* JEZIČKI TOGGLE */}
+    <div className="flex items-center">
+      <div className="flex items-center bg-gray-100 rounded-full px-[3px] py-[2px] shadow-inner w-[130px] h-[28px]">
+        <button
+          onClick={() => setSelectedLanguage("Crnogorski")}
+          className={`flex-1 text-[10px] font-medium rounded-full px-1 py-[2px] transition-all
+            ${
+              selectedLanguage === "Crnogorski"
+                ? "bg-gray-700 text-white"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+        >
+          Crnogorski
+        </button>
+        <button
+          onClick={() => setSelectedLanguage("English")}
+          className={`flex-1 text-[10px] font-medium rounded-full px-1 py-[2px] transition-all
+            ${
+              selectedLanguage === "English"
+                ? "bg-gray-700 text-white"
+                : "text-gray-600 hover:text-gray-800"
+            }`}
+        >
+          English
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* RED 2 — MOBILE FILTER DUGMAD (ispod loga, scrollable) */}
+  <div className="px-4 pb-2 sm:hidden">
+    <div className="flex gap-2 overflow-x-auto no-scrollbar">
+
+      <button
+        onClick={() =>
+          setPhaseFilter((prev) => (prev === "idejno" ? null : "idejno"))
+        }
+        className={`whitespace-nowrap px-3 py-1 text-[11px] rounded-full border transition
+          ${
+            phaseFilter === "idejno"
+              ? "bg-green-200 text-green-900 border-green-500"
+              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+          }`}
+      >
+        Idejno rješenje
+      </button>
+
+      <button
+        onClick={() =>
+          setPhaseFilter((prev) => (prev === "idejni" ? null : "idejni"))
+        }
+        className={`whitespace-nowrap px-3 py-1 text-[11px] rounded-full border transition
+          ${
+            phaseFilter === "idejni"
+              ? "bg-green-200 text-green-900 border-green-500"
+              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+          }`}
+      >
+        Idejni projekat
+      </button>
+
+      <button
+        onClick={() =>
+          setPhaseFilter((prev) => (prev === "glavni" ? null : "glavni"))
+        }
+        className={`whitespace-nowrap px-3 py-1 text-[11px] rounded-full border transition
+          ${
+            phaseFilter === "glavni"
+              ? "bg-green-200 text-green-900 border-green-500"
+              : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
+          }`}
+      >
+        Glavni projekat
+      </button>
+
+    </div>
+  </div>
+</header>
 
       {/* MAPA */}
       <main
@@ -467,6 +750,28 @@ export default function InteractiveMap() {
           >
             <MyMapSVG />
           </svg>
+
+{/* Status legenda (boje po fazi) */}
+{phaseFilter && (
+  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm shadow-md rounded-xl px-3 py-2 text-[10px] sm:text-xs text-gray-700 border border-gray-200">
+    <div className="font-semibold mb-1">Status faze projekta</div>
+
+    <div className="flex items-center gap-2 mb-1">
+      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#22C55E" }} />
+      <span>Završeno</span>
+    </div>
+
+    <div className="flex items-center gap-2 mb-1">
+      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#EAB308" }} />
+      <span>U toku</span>
+    </div>
+
+    <div className="flex items-center gap-2">
+      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#DC2626" }} />
+      <span>Planirano</span>
+    </div>
+  </div>
+)}
 
           {/* Tooltip */}
           <AnimatePresence>
