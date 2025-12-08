@@ -199,59 +199,46 @@ const getPhaseStatusColor = (segmentKey) => {
   };
 
   // === Aktivacija hover/klik događaja ===
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg) return;
+// === Aktivacija hover/klik događaja (simple, radi i na mobu) ===
+useEffect(() => {
+  const svg = svgRef.current;
+  if (!svg) return;
 
-    const listeners = [];
+  const listeners = [];
 
-    Object.entries(SEGMENT_IDS).forEach(([key, ids]) => {
-      ids.forEach((id) => {
-let el = svg.querySelector(`#${CSS.escape(id)}`);
-if (!el) return;
+  Object.entries(SEGMENT_IDS).forEach(([key, ids]) => {
+    ids.forEach((id) => {
+      const el = svg.querySelector(`#${CSS.escape(id)}`);
+      if (!el) return;
 
-// Ako je grupa — uzmi path unutra za klik
-let clickTarget = el;
-if (el.tagName.toLowerCase() === "g") {
-    const shape = el.querySelector("path, line, polyline");
-    if (shape) clickTarget = shape;
-}
+      // dozvoljavamo default pointer-events da bi tap radio svuda
+      el.style.cursor = "pointer";
 
-clickTarget.style.cursor = "pointer";
-clickTarget.style.pointerEvents = "stroke";
+      const onEnter = () => setHovered(key);
+      const onLeave = () => setHovered(null);
+      const onClick = (e) => {
+        e.stopPropagation();
+        setActiveSegment((prev) => (prev === key ? null : key));
+      };
 
-const onEnter = () => setHovered(key);
-const onLeave = () => setHovered(null);
+      el.addEventListener("mouseenter", onEnter);
+      el.addEventListener("mouseleave", onLeave);
+      el.addEventListener("click", onClick);
 
-const onClick = (e) => {
-    e.stopPropagation();
-    setActiveSegment((prev) => (prev === key ? null : key));
-};
-
-clickTarget.addEventListener("mouseenter", onEnter);
-clickTarget.addEventListener("mouseleave", onLeave);
-clickTarget.addEventListener("click", onClick);
-
-listeners.push({ el: clickTarget, onEnter, onLeave, onClick });
-
-
-        el.addEventListener("mouseenter", onEnter);
-        el.addEventListener("mouseleave", onLeave);
-        el.addEventListener("click", onClick);
-
-        listeners.push({ el, onEnter, onLeave, onClick });
-      });
+      listeners.push({ el, onEnter, onLeave, onClick });
     });
+  });
 
-    // 🔁 Clean-up — sprečava gubljenje klikova i višestruke evente
-    return () => {
-      listeners.forEach(({ el, onEnter, onLeave, onClick }) => {
-        el.removeEventListener("mouseenter", onEnter);
-        el.removeEventListener("mouseleave", onLeave);
-        el.removeEventListener("click", onClick);
-      });
-    };
-  }, []);
+  // clean-up
+  return () => {
+    listeners.forEach(({ el, onEnter, onLeave, onClick }) => {
+      el.removeEventListener("mouseenter", onEnter);
+      el.removeEventListener("mouseleave", onLeave);
+      el.removeEventListener("click", onClick);
+    });
+  };
+}, []);
+
 
 // === Hover + bojenje po fazi (idejno / idejni / glavni) ===
 // === Hover + bojenje po fazi (sa starim ponašanjem kad nema filtera) ===
@@ -763,17 +750,27 @@ useEffect(() => {
 </header>
 
       {/* MAPA */}
-      <main
-        className={`flex-1 flex items-end justify-center overflow-hidden transition-all duration-300 ${activeSegment ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'}`}
-        onMouseMove={(e) => {
-          // === Tooltip praćenje ===
-          if (!isPanning) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-            document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
-          }
-        }}
-      >
+<main
+  className={`flex-1 flex items-end justify-center overflow-hidden transition-all duration-300
+    ${
+      activeSegment
+        ? "mb-80 md:mb-0 md:mt-[60px]"   // kad je popup otvoren, samo podigni mapu marginom
+        : "sm:mt-[90px] md:mt-[60px]"    // normalan offset ispod headera
+    }`}
+  onMouseMove={(e) => {
+    if (!isPanning) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      document.documentElement.style.setProperty(
+        "--mouse-x",
+        `${e.clientX - rect.left}px`
+      );
+      document.documentElement.style.setProperty(
+        "--mouse-y",
+        `${e.clientY - rect.top}px`
+      );
+    }
+  }}
+>
         <div className={`relative w-full h-full flex justify-center map-container transition-all duration-300 ${activeSegment ? 'items-start pt-2 mb-12' : 'items-start pt-4 mb-16'}`}      >
           <svg
             ref={svgRef}
