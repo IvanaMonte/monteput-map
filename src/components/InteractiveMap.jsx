@@ -16,62 +16,58 @@ export default function InteractiveMap() {
   // vrijednosti: "idejno" | "idejni" | "glavni"
   const [phaseFilter, setPhaseFilter] = useState(null);
 
-const getPhaseStatusColor = (segmentKey, lang = "me") => {
-  if (!phaseFilter) return null;
-
-  const row = lang === "en" ? TABLE_DATA_EN[segmentKey] : TABLE_DATA[segmentKey];
+// Boja linije na mapi po statusu (isto kao u popupu)
+const getPhaseStatusColor = (segmentKey) => {
+  if (!segmentKey) return null;
+  const row = TABLE_DATA[segmentKey];
   if (!row) return null;
 
+  // koristi odgovarajuće polje u zavisnosti od aktivnog filtera
   let status = "";
   if (phaseFilter === "idejno") status = row.idejno;
   else if (phaseFilter === "idejni") status = row.idejni;
   else if (phaseFilter === "glavni") status = row.glavni;
 
-  if (!status) return "#9CA3AF"; // fallback: no data
+  if (!status) return "#9CA3AF";
 
   const v = status.toLowerCase();
 
-  // ===============================
-  // 🟢 COMPLETED / ZAVRŠENO
-  // ===============================
+  // 🟢 završeno / completed
   if (
-    v.includes("zavr") ||              // završeno, završen...
-    v.includes("completed") ||         // completed
+    v.includes("zavr") ||
+    v.includes("completed") ||
     v.includes("done")
   ) {
-    return "#22C55E"; // green
+    return "#22C55E";
   }
 
-  // ============================================
-  // 🟡 "IN PROGRESS" / REVIZIJA / IZRADa
-  // ============================================
+  // 🟡 u toku / revizija / izrada / ongoing
   if (
     v.includes("u toku") ||
     v.includes("revizija") ||
     v.includes("izrada") ||
     v.includes("revision in progress") ||
     v.includes("project preparation") ||
+    v.includes("preparation") ||
     v.includes("ongoing") ||
     v.includes("in progress")
   ) {
-    return "#EAB308"; // yellow
+    return "#EAB308";
   }
 
-  // ============================================
-  // 🔴 PLANNED / TENDER / RASPISIVANJE
-  // ============================================
+  // 🔴 tender / planirano / planned
   if (
     v.includes("tender") ||
     v.includes("raspis") ||
     v.includes("plan") ||
     v.includes("planned")
   ) {
-    return "#e53935"; // red (alert red)
+    return "#e53935";
   }
 
-  // Default: gray
   return "#9CA3AF";
 };
+
 
 
   const svgRef = useRef(null);
@@ -258,6 +254,7 @@ listeners.push({ el: clickTarget, onEnter, onLeave, onClick });
   }, []);
 
 // === Hover + bojenje po fazi (idejno / idejni / glavni) ===
+// === Hover + bojenje po fazi (sa starim ponašanjem kad nema filtera) ===
 useEffect(() => {
   const svg = svgRef.current;
   if (!svg) return;
@@ -267,7 +264,7 @@ useEffect(() => {
       const el = svg.querySelector(`#${CSS.escape(id)}`);
       if (!el) return;
 
-      // ciljamo linije dionice (path/line/polyline), ne krugove i tekst
+      // svi path/line/polyline elementi unutar dionice
       const shapes =
         el.tagName === "path" ||
         el.tagName === "line" ||
@@ -275,78 +272,103 @@ useEffect(() => {
           ? [el]
           : Array.from(el.querySelectorAll("path, line, polyline"));
 
-      const baseColor = getPhaseStatusColor(key);
+      // reset samo *style* vrijednosti koje smo mi dirali
+      shapes.forEach((shape) => {
+        shape.style.strokeWidth = "";
+        shape.style.opacity = "";
+        if (!phaseFilter) {
+          // kad isključimo filter – vrati originalnu boju iz SVG-a
+          shape.style.stroke = "";
+        }
+      });
+      el.style.filter = "";
+      el.style.transform = "scale(1)";
+      el.style.webkitFilter = "";
+      el.style.mixBlendMode = "";
+      el.removeAttribute("opacity");
 
-      const applyBaseStyle = () => {
-        if (shapes.length && baseColor) {
-          // filter je aktivan → oboji dionicu
+      // -----------------
+      // 1) FILTER UKLJUČEN
+      // -----------------
+      if (phaseFilter) {
+        const color = getPhaseStatusColor(key);
+        if (color) {
           shapes.forEach((shape) => {
-            shape.style.stroke = baseColor;
-            shape.style.strokeWidth = "7";   // osnovna debljina
-            shape.style.opacity = "0.9";     // blaga, nije agresivno
-            shape.style.pointerEvents = "stroke"; // lakši klik
-          });
-        } else if (shapes.length) {
-          // nema filtera → vrati na originalnu boju iz SVG-a
-          shapes.forEach((shape) => {
-            shape.style.stroke = "";
-            shape.style.strokeWidth = "";
-            shape.style.opacity = "";
-            shape.style.pointerEvents = "";  // nazad na default
+            shape.style.stroke = color;
+            shape.style.strokeWidth = "7";
+            shape.style.opacity = "0.9";
           });
         }
 
-        // reset efekata na grupi
+        if (activeSegment) {
+          if (key === activeSegment) {
+            // aktivni segment – deblja linija, full opacity
+            shapes.forEach((shape) => {
+              shape.style.strokeWidth = "9";
+              shape.style.opacity = "1";
+            });
+            el.style.transform = "scale(1.02)";
+            el.style.transformOrigin = "center";
+            el.style.transition = "all 0.2s ease-out";
+            el.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.45))";
+          } else {
+            // ostali dok je jedan aktivan – prigušeni
+            shapes.forEach((shape) => {
+              shape.style.opacity = "0.35";
+            });
+            el.style.filter = "grayscale(0.3) brightness(0.9)";
+          }
+        } else if (hovered === key) {
+          // hover kada je filter uključen
+          shapes.forEach((shape) => {
+            shape.style.strokeWidth = "8";
+            shape.style.opacity = "1";
+          });
+          el.style.transform = "scale(1.02)";
+          el.style.transformOrigin = "center";
+          el.style.transition = "all 0.2s ease-out";
+          el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.35))";
+        }
+
+        return; // završavamo za ovaj el
+      }
+
+      // --------------------
+      // 2) FILTER ISKLJUČEN
+      //    → STARA LOGIKA
+      // --------------------
+      if (activeSegment) {
+        if (key === activeSegment) {
+          // aktivni segment – blago istakni
+          el.style.transform = "scale(1.0)";
+          el.style.transformOrigin = "center";
+          el.style.transition = "all 0.2s ease-out";
+        } else {
+          // neaktivni – potamni i blur, kao ranije
+          el.setAttribute("opacity", "0.5");
+          el.setAttribute("stroke-width", "1");
+          el.style.filter = "brightness(0.08) grayscale(1) blur(0.5px)";
+          el.style.webkitFilter = "brightness(0.08) grayscale(1) blur(0.5px)";
+          el.style.mixBlendMode = "multiply";
+        }
+      } else if (hovered === key) {
+        // hover – lagani shadow & scale
+        el.setAttribute("opacity", "1");
+        el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.3))";
+        el.style.transform = "scale(1.02)";
+        el.style.transformOrigin = "center";
+        el.style.transition = "all 0.2s ease-out";
+      } else {
+        // normalno stanje, ali NE brišemo stroke/fill iz SVG-a
         el.style.filter = "";
         el.style.transform = "scale(1)";
         el.style.webkitFilter = "";
         el.style.mixBlendMode = "";
-      };
-
-      // === STANJA: ACTIVE / HOVER / NORMAL ===
-
-      if (activeSegment) {
-        if (key === activeSegment) {
-          // ✅ AKTIVNI SEGMENT (kliknut)
-          applyBaseStyle();
-          shapes.forEach((shape) => {
-            shape.style.strokeWidth = "9";
-            shape.style.opacity = "1";
-          });
-          el.style.transform = "scale(1.02)";
-            el.style.transformOrigin = "center";
-            el.style.transition = "all 0.2s ease-out";
-          el.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.45))";
-        } else {
-          // 🔹 OSTALI DOK JE JEDAN AKTIVAN – prigušeni
-          applyBaseStyle();
-          shapes.forEach((shape) => {
-            if (baseColor) {
-              shape.style.opacity = "0.35";  // boja i dalje vidljiva ali utišana
-            }
-          });
-          el.style.filter = "grayscale(0.3) brightness(0.9)";
-          }
-      } else if (hovered === key) {
-        // 🟡 SAMO HOVER – istakni malo
-        applyBaseStyle();
-        shapes.forEach((shape) => {
-          if (baseColor) {
-            shape.style.strokeWidth = "8";
-            shape.style.opacity = "1";
-          }
-        });
-        el.style.transform = "scale(1.02)";
-        el.style.transformOrigin = "center";
-        el.style.transition = "all 0.2s ease-out";
-        el.style.filter = "drop-shadow(0 1px 4px rgba(0,0,0,0.35))";
-      } else {
-        // 🔵 NORMALNO STANJE
-        applyBaseStyle();
       }
     });
   });
 }, [activeSegment, hovered, phaseFilter]);
+
 
 
   // === Zoom (točkić) - allow zoom on SVG only ===
@@ -365,36 +387,34 @@ useEffect(() => {
   const [isTouchPanning, setIsTouchPanning] = useState(false);
   const [lastTouchPos, setLastTouchPos] = useState({ x: 0, y: 0 });
 
-  const handleTouchStart = (e) => {
-    if (e.touches.length === 2) {
-      // Two-finger pinch zoom
-      e.preventDefault();
-      setIsTouchPanning(false); // Stop any single-finger panning
-      const touch1 = e.touches[0];
-      const touch2 = e.touches[1];
-      const distance = Math.hypot(
-        touch1.clientX - touch2.clientX,
-        touch1.clientY - touch2.clientY
-      );
-      setTouchDistance(distance);
-    } else if (e.touches.length === 1) {
-      const touch = e.touches[0];
-      const now = Date.now();
+ const handleTouchStart = (e) => {
+  if (e.touches.length === 2) {
+    // pinch → OK da blokiramo browser gest
+    e.preventDefault();
+    setIsTouchPanning(false);
 
-      // Handle double tap - reset to default zoom
-      if (now - lastTouchTime < 300) {
-        e.preventDefault();
-        setZoom(getResponsiveZoom());
-        setOffset({ x: 0, y: 0 }); // Also reset position to center
-        setIsTouchPanning(false);
-      } else {
-        // Start single-finger panning
-        setIsTouchPanning(true);
-        setLastTouchPos({ x: touch.clientX, y: touch.clientY });
-      }
-      setLastTouchTime(now);
-    }
-  };
+    const t1 = e.touches[0];
+    const t2 = e.touches[1];
+    setTouchDistance(Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY));
+    return;
+  }
+
+  // 1 finger = tap ili pan → NE SMIJE preventDefault
+  const touch = e.touches[0];
+  const now = Date.now();
+
+  // double-tap reset ZOOM (bez preventDefault)
+  if (now - lastTouchTime < 300) {
+    setZoom(getResponsiveZoom());
+    setOffset({ x: 0, y: 0 });
+    return;
+  }
+
+  setIsTouchPanning(true);
+  setLastTouchPos({ x: touch.clientX, y: touch.clientY });
+  setLastTouchTime(now);
+};
+
 
   const handleTouchMove = (e) => {
     if (e.touches.length === 2) {

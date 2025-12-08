@@ -1,8 +1,8 @@
 import React, { useRef, useState } from "react";
-import { TABLE_DATA,TABLE_DATA_EN  } from "../data/svgMapData";
+import { TABLE_DATA, TABLE_DATA_EN } from "../data/svgMapData";
 import { translations } from "../i18n";
 
-//  ISTE BOJE KAO NA MAPI (ME + EN)
+//  BOJE STATUSA – ISTE LOGIKE KAO NA MAPI (ME + EN)
 const getStatusBadgeColor = (statusRaw) => {
   if (!statusRaw) return "#9CA3AF"; // siva – nema podataka
 
@@ -45,13 +45,15 @@ const getStatusBadgeColor = (statusRaw) => {
   return "#9CA3AF";
 };
 
-const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) => {
-
-  //const data = TABLE_DATA[segmentKey];
+const SegmentPopup = ({
+  segmentKey,
+  onClose,
+  selectedLanguage = "Crnogorski",
+}) => {
   const data =
-  selectedLanguage === "English"
-    ? TABLE_DATA_EN[segmentKey]
-    : TABLE_DATA[segmentKey];
+    selectedLanguage === "English"
+      ? TABLE_DATA_EN[segmentKey]
+      : TABLE_DATA[segmentKey];
 
   if (!data) return null;
 
@@ -59,13 +61,15 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
   const [startY, setStartY] = useState(null);
   const [translateY, setTranslateY] = useState(0);
 
-  // Povlačenje za zatvaranje (samo mobilni)
+  // Povlačenje za zatvaranje (samo mobilni bottom sheet)
   const handleTouchStart = (e) => {
-    if (e.touches.length === 1) setStartY(e.touches[0].clientY);
+    if (e.touches.length === 1) {
+      setStartY(e.touches[0].clientY);
+    }
   };
 
   const handleTouchMove = (e) => {
-    if (startY !== null) {
+    if (startY !== null && e.touches.length === 1) {
       const diff = e.touches[0].clientY - startY;
       if (diff > 0) setTranslateY(diff);
     }
@@ -103,12 +107,15 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
           animation: "slide-up 0.35s cubic-bezier(0.22, 1, 0.36, 1)",
         }}
       >
-        <div className="w-10 h-1.5 bg-gray-300 rounded-full mx-auto mb-2"></div>
+        {/* Dragger bar */}
+        <div className="w-10 h-1.5 bg-gray-300 rounded-full mx-auto mb-2" />
 
+        {/* Naslov */}
         <h3 className="text-sm font-semibold text-gray-900 leading-snug truncate">
           {data.naziv}
         </h3>
 
+        {/* Oznaka dionice + km */}
         <div className="flex items-center gap-1.5 mt-1 mb-2">
           <span className="bg-pink-600 text-white font-bold rounded-md px-2 py-[2px] text-[11px] leading-none">
             {segmentKey}
@@ -118,17 +125,29 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
           </span>
         </div>
 
+        {/* Statusi po fazi */}
         <div className="space-y-1.5">
-          <PopupRow label={translations[selectedLanguage].ideaSolution} value={data.idejno} />
-          <PopupRow label={translations[selectedLanguage].ideaProject} value={data.idejni} />
-          <PopupRow label={translations[selectedLanguage].mainProject} value={data.glavni} />
+          <PopupRow
+            label={translations[selectedLanguage].ideaSolution}
+            value={data.idejno}
+          />
+          <PopupRow
+            label={translations[selectedLanguage].ideaProject}
+            value={data.idejni}
+          />
+          <PopupRow
+            label={translations[selectedLanguage].mainProject}
+            value={data.glavni}
+          />
         </div>
 
+        {/* Vrijednost */}
         <div className="mt-3 bg-gray-100 p-2.5 rounded-lg text-center text-gray-800 text-xs">
           <strong>{translations[selectedLanguage].valueLabel}: </strong>
           {formatValue(data.vrijednost)}
         </div>
 
+        {/* Linkovi i close */}
         <div className="mt-3 flex flex-col justify-between items-center gap-2">
           {data.video && (
             <a
@@ -159,13 +178,15 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
         </div>
       </div>
 
-      {/* === DESKTOP popup – top-right pozicija (below header) === */}
+      {/* === DESKTOP popup – top-right (ispod headera) === */}
       <div
         onClick={(e) => e.stopPropagation()}
         className="hidden sm:block absolute top-[176px] right-8 z-[10000] bg-white p-5 rounded-xl shadow-2xl border border-gray-200 w-[380px] max-h-[85vh] overflow-y-auto font-sans animate-fadeIn"
         style={{ animation: "fadeIn 0.3s ease-in-out" }}
       >
-        <h3 className="text-lg font-semibold text-gray-900 m-0">{data.naziv}</h3>
+        <h3 className="text-lg font-semibold text-gray-900 m-0">
+          {data.naziv}
+        </h3>
 
         <div className="flex items-center gap-2 mt-2 mb-3">
           <span className="bg-pink-600 text-white font-bold rounded-md px-3 py-1 text-sm">
@@ -174,12 +195,21 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
           <span className="text-gray-600 text-sm">{data.duzinaKm} km</span>
         </div>
 
-          <PopupRow label={translations[selectedLanguage].ideaSolution} value={data.idejno} />
-          <PopupRow label={translations[selectedLanguage].ideaProject} value={data.idejni} />
-          <PopupRow label={translations[selectedLanguage].mainProject} value={data.glavni} />
+        <PopupRow
+          label={translations[selectedLanguage].ideaSolution}
+          value={data.idejno}
+        />
+        <PopupRow
+          label={translations[selectedLanguage].ideaProject}
+          value={data.idejni}
+        />
+        <PopupRow
+          label={translations[selectedLanguage].mainProject}
+          value={data.glavni}
+        />
 
         <div className="mt-4 bg-gray-100 p-3 rounded-lg text-center text-gray-800 text-sm">
-          <strong> {translations[selectedLanguage].valueLabel} </strong>
+          <strong>{translations[selectedLanguage].valueLabel} </strong>
           {formatValue(data.vrijednost)}
         </div>
 
@@ -229,7 +259,7 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
 
 const PopupRow = ({ label, value }) => {
   const color = getStatusBadgeColor(value);
-  const isLightBg = color === "#EAB308" || color === "#9CA3AF"; // žuta i siva -> tamniji tekst
+  const isLightBg = color === "#EAB308" || color === "#9CA3AF"; // žuta i siva → tamniji tekst
 
   return (
     <div className="flex justify-between items-center border border-gray-200 rounded-md px-3 py-2 text-sm">
