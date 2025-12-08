@@ -2,6 +2,48 @@ import React, { useRef, useState } from "react";
 import { TABLE_DATA,TABLE_DATA_EN  } from "../data/svgMapData";
 import { translations } from "../i18n";
 
+//  ISTE BOJE KAO NA MAPI (ME + EN)
+const getStatusBadgeColor = (statusRaw) => {
+  if (!statusRaw) return "#9CA3AF"; // siva – nema podataka
+
+  const v = statusRaw.toLowerCase();
+
+  // 🟢 završeno / completed
+  if (
+    v.includes("zavr") ||          // završeno, završen...
+    v.includes("completed") ||     // completed
+    v.includes("done")
+  ) {
+    return "#22C55E";
+  }
+
+  // 🟡 u toku / revizija / izrada / ongoing
+  if (
+    v.includes("u toku") ||
+    v.includes("revizija") ||
+    v.includes("izrada") ||
+    v.includes("revision in progress") ||
+    v.includes("project preparation") ||
+    v.includes("preparation") ||
+    v.includes("ongoing") ||
+    v.includes("in progress")
+  ) {
+    return "#EAB308";
+  }
+
+  // 🔴 tender / planirano / planned
+  if (
+    v.includes("tender") ||
+    v.includes("raspis") ||
+    v.includes("plan") ||
+    v.includes("planned")
+  ) {
+    return "#e53935";
+  }
+
+  // default siva
+  return "#9CA3AF";
+};
 
 const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) => {
 
@@ -186,12 +228,8 @@ const SegmentPopup = ({ segmentKey, onClose, selectedLanguage = "Crnogorski" }) 
 };
 
 const PopupRow = ({ label, value }) => {
-  const color =
-    value?.toLowerCase().includes("zavr") || value?.includes("završen")
-      ? "#34c759"
-      : value?.toLowerCase().includes("toku")
-      ? "#ff9500"
-      : "#ffd60a";
+  const color = getStatusBadgeColor(value);
+  const isLightBg = color === "#EAB308" || color === "#9CA3AF"; // žuta i siva -> tamniji tekst
 
   return (
     <div className="flex justify-between items-center border border-gray-200 rounded-md px-3 py-2 text-sm">
@@ -199,8 +237,8 @@ const PopupRow = ({ label, value }) => {
       <span
         className="rounded-md px-3 py-1 font-medium capitalize"
         style={{
-          background: color,
-          color: color === "#ffd60a" ? "#333" : "#fff",
+          backgroundColor: color,
+          color: isLightBg ? "#111827" : "#ffffff",
         }}
       >
         {value || "—"}

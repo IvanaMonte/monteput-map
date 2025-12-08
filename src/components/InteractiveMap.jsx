@@ -16,10 +16,10 @@ export default function InteractiveMap() {
   // vrijednosti: "idejno" | "idejni" | "glavni"
   const [phaseFilter, setPhaseFilter] = useState(null);
 
-const getPhaseStatusColor = (segmentKey) => {
+const getPhaseStatusColor = (segmentKey, lang = "me") => {
   if (!phaseFilter) return null;
 
-  const row = TABLE_DATA[segmentKey];
+  const row = lang === "en" ? TABLE_DATA_EN[segmentKey] : TABLE_DATA[segmentKey];
   if (!row) return null;
 
   let status = "";
@@ -27,24 +27,52 @@ const getPhaseStatusColor = (segmentKey) => {
   else if (phaseFilter === "idejni") status = row.idejni;
   else if (phaseFilter === "glavni") status = row.glavni;
 
-  if (!status) return "#9CA3AF"; // nema podataka → siva
+  if (!status) return "#9CA3AF"; // fallback: no data
 
   const v = status.toLowerCase();
 
-  // 🟢 završeno
-  if (v.includes("zavr")) return "#22C55E";
+  // ===============================
+  // 🟢 COMPLETED / ZAVRŠENO
+  // ===============================
+  if (
+    v.includes("zavr") ||              // završeno, završen...
+    v.includes("completed") ||         // completed
+    v.includes("done")
+  ) {
+    return "#22C55E"; // green
+  }
 
-  // 🟡 u toku / revizija / izrada
-  if (v.includes("u toku") || v.includes("revizija") || v.includes("izrada"))
-    return "#EAB308";
+  // ============================================
+  // 🟡 "IN PROGRESS" / REVIZIJA / IZRADa
+  // ============================================
+  if (
+    v.includes("u toku") ||
+    v.includes("revizija") ||
+    v.includes("izrada") ||
+    v.includes("revision in progress") ||
+    v.includes("project preparation") ||
+    v.includes("ongoing") ||
+    v.includes("in progress")
+  ) {
+    return "#EAB308"; // yellow
+  }
 
-  // 🔴 planirano / tender
-  if (v.includes("tender") || v.includes("raspisivanje") || v.includes("plan"))
-    return "#DC2626";
+  // ============================================
+  // 🔴 PLANNED / TENDER / RASPISIVANJE
+  // ============================================
+  if (
+    v.includes("tender") ||
+    v.includes("raspis") ||
+    v.includes("plan") ||
+    v.includes("planned")
+  ) {
+    return "#e53935"; // red (alert red)
+  }
 
-  // ⚪ fallback: nema podataka
+  // Default: gray
   return "#9CA3AF";
 };
+
 
   const svgRef = useRef(null);
 
@@ -286,8 +314,8 @@ useEffect(() => {
             shape.style.opacity = "1";
           });
           el.style.transform = "scale(1.02)";
-          el.style.transformOrigin = "center";
-          el.style.transition = "all 0.2s ease-out";
+            el.style.transformOrigin = "center";
+            el.style.transition = "all 0.2s ease-out";
           el.style.filter = "drop-shadow(0 0 6px rgba(0,0,0,0.45))";
         } else {
           // 🔹 OSTALI DOK JE JEDAN AKTIVAN – prigušeni
@@ -298,7 +326,7 @@ useEffect(() => {
             }
           });
           el.style.filter = "grayscale(0.3) brightness(0.9)";
-        }
+          }
       } else if (hovered === key) {
         // 🟡 SAMO HOVER – istakni malo
         applyBaseStyle();
@@ -515,7 +543,7 @@ useEffect(() => {
               : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
           }`}
       >
-        Idejno rješenje
+        {translations[selectedLanguage].phaseIdejno}
       </button>
 
       <button
@@ -529,7 +557,7 @@ useEffect(() => {
               : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
           }`}
       >
-        Idejni projekat
+         {translations[selectedLanguage].phaseIdejni}
       </button>
 
       <button
@@ -543,7 +571,7 @@ useEffect(() => {
               : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
           }`}
       >
-        Glavni projekat
+         {translations[selectedLanguage].phaseGlavni}
       </button>
     </div>
   </div>
@@ -560,7 +588,7 @@ useEffect(() => {
               : "text-gray-600 hover:text-gray-800"
           }`}
       >
-        Crnogorski
+        {translations[selectedLanguage].headerLanguageMe}
       </button>
       <button
         onClick={() => setSelectedLanguage("English")}
@@ -571,7 +599,7 @@ useEffect(() => {
               : "text-gray-600 hover:text-gray-800"
           }`}
       >
-        English
+         {translations[selectedLanguage].headerLanguageEn}
       </button>
     </div>
   </div>
@@ -602,7 +630,7 @@ useEffect(() => {
                 : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
             }`}
         >
-          Idejno rješenje
+          {translations[selectedLanguage].phaseIdejno}
         </button>
 
         <button
@@ -616,7 +644,7 @@ useEffect(() => {
                 : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
             }`}
         >
-          Idejni projekat
+           {translations[selectedLanguage].phaseIdejni}
         </button>
 
         <button
@@ -630,7 +658,7 @@ useEffect(() => {
                 : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
             }`}
         >
-          Glavni projekat
+           {translations[selectedLanguage].phaseGlavni}
         </button>
       </div>
     </div>
@@ -647,7 +675,7 @@ useEffect(() => {
                 : "text-gray-600 hover:text-gray-800"
             }`}
         >
-          Crnogorski
+          {translations[selectedLanguage].headerLanguageMe}
         </button>
         <button
           onClick={() => setSelectedLanguage("English")}
@@ -658,7 +686,7 @@ useEffect(() => {
                 : "text-gray-600 hover:text-gray-800"
             }`}
         >
-          English
+           {translations[selectedLanguage].headerLanguageEn}
         </button>
       </div>
     </div>
@@ -679,7 +707,7 @@ useEffect(() => {
               : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
           }`}
       >
-        Idejno rješenje
+          {translations[selectedLanguage].phaseIdejno}
       </button>
 
       <button
@@ -693,7 +721,7 @@ useEffect(() => {
               : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
           }`}
       >
-        Idejni projekat
+       {translations[selectedLanguage].phaseIdejni}
       </button>
 
       <button
@@ -707,16 +735,16 @@ useEffect(() => {
               : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
           }`}
       >
-        Glavni projekat
+        {translations[selectedLanguage].phaseGlavni}
       </button>
 
     </div>
-  </div>
+  </div> 
 </header>
 
       {/* MAPA */}
       <main
-        className={`flex-1 flex items-end justify-center overflow-hidden transition-all duration-300 ${activeSegment ? 'mb-80 md:mb-0 md:mt-[60px]' : 'sm:mt-[90px] md:mt-[60px]'}`}
+        className={`flex-1 flex items-end justify-center overflow-hidden transition-all duration-300 ${activeSegment ? 'md:translate-y-0 -translate-y-full' : 'translate-y-0'}`}
         onMouseMove={(e) => {
           // === Tooltip praćenje ===
           if (!isPanning) {
@@ -753,22 +781,22 @@ useEffect(() => {
 
 {/* Status legenda (boje po fazi) */}
 {phaseFilter && (
-  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm shadow-md rounded-xl px-3 py-2 text-[10px] sm:text-xs text-gray-700 border border-gray-200">
-    <div className="font-semibold mb-1">Status faze projekta</div>
+  <div className="hidden sm:block absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm shadow-md rounded-xl px-3 py-2 text-[10px] sm:text-xs text-gray-700 border border-gray-200">
+    <div className="font-semibold mb-1">  {translations[selectedLanguage].projectPhaseStatus}</div>
 
     <div className="flex items-center gap-2 mb-1">
       <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#22C55E" }} />
-      <span>Završeno</span>
+      <span>{translations[selectedLanguage].finished}</span>
     </div>
 
     <div className="flex items-center gap-2 mb-1">
       <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#EAB308" }} />
-      <span>U toku</span>
+      <span>{translations[selectedLanguage].inProgress}</span>
     </div>
 
     <div className="flex items-center gap-2">
-      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#DC2626" }} />
-      <span>Planirano</span>
+      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#e53935" }} />
+      <span>{translations[selectedLanguage].planned}</span>
     </div>
   </div>
 )}
