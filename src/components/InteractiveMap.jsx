@@ -52,7 +52,7 @@ const getPhaseStatusColor = (segmentKey) => {
     v.includes("ongoing") ||
     v.includes("in progress")
   ) {
-    return "#EAB308";
+    return "#F7D774";
   }
 
   // 🔴 tender / planirano / planned
@@ -92,13 +92,13 @@ const getPhaseStatusColor = (segmentKey) => {
     const width = window.innerWidth;
     if (width < 768) {
       // 📱 mobilni: veća početna vrijednost jer je ekran mali
-      return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
+      return { MIN_ZOOM: 2.5, MAX_ZOOM: 3.0 };
     } else if (width < 1440) {
       // 💻 laptop / tablet
-      return { MIN_ZOOM: 1.4, MAX_ZOOM: 6.0 };
+      return { MIN_ZOOM: 1.4, MAX_ZOOM: 2.0 };
     } else {
       // 🖥️ veliki ekrani
-      return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.5 };
+      return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.0 };
     }
   };
 
@@ -751,110 +751,119 @@ useEffect(() => {
 
       {/* MAPA */}
 <main
-  className={`flex-1 flex items-end justify-center overflow-hidden transition-all duration-300
-    ${
-      activeSegment
-        ? "mb-80 md:mb-0 md:mt-[60px]"   // kad je popup otvoren, samo podigni mapu marginom
-        : "sm:mt-[90px] md:mt-[60px]"    // normalan offset ispod headera
-    }`}
+  className="flex-1 flex items-center justify-center overflow-hidden pt-[60px] pb-[60px]"
   onMouseMove={(e) => {
     if (!isPanning) {
       const rect = e.currentTarget.getBoundingClientRect();
-      document.documentElement.style.setProperty(
-        "--mouse-x",
-        `${e.clientX - rect.left}px`
-      );
-      document.documentElement.style.setProperty(
-        "--mouse-y",
-        `${e.clientY - rect.top}px`
-      );
+      document.documentElement.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+      document.documentElement.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
     }
   }}
 >
-        <div className={`relative w-full h-full flex justify-center map-container transition-all duration-300 ${activeSegment ? 'items-start pt-2 mb-12' : 'items-start pt-4 mb-16'}`}      >
-          <svg
-            ref={svgRef}
-            viewBox="0 0 2290 1280"
-            preserveAspectRatio="xMidYMid meet"
-            className="w-full h-full touch-none"
-            onWheel={handleWheel}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleSvgMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            style={{
-              transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
-              transformOrigin: "center",
-              transition: isPanning ? "none" : "transform 0.2s ease-out",
-              cursor: isPanning ? "grabbing" : "grab",
-              touchAction: "none",
-            }}
-          >
-            <MyMapSVG />
-          </svg>
+  <div className="relative w-full h-full flex justify-center items-center">
 
+    <svg
+      ref={svgRef}
+      viewBox="0 0 2290 1280"
+      preserveAspectRatio="xMidYMid meet"
+      className="w-full h-full touch-none"
+      onWheel={handleWheel}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleSvgMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+      style={{
+        transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+        transformOrigin: "center",
+        transition: isPanning ? "none" : "transform 0.2s ease-out",
+        cursor: isPanning ? "grabbing" : "grab",
+        touchAction: "none",
+      }}
+    >
+      <MyMapSVG />
+    </svg>
+    
 {/* Status legenda (boje po fazi) */}
 {phaseFilter && (
   <div className="hidden sm:block absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm shadow-md rounded-xl px-3 py-2 text-[10px] sm:text-xs text-gray-700 border border-gray-200">
-    <div className="font-semibold mb-1">  {translations[selectedLanguage].projectPhaseStatus}</div>
 
+    <div className="font-semibold mb-1">
+      {translations[selectedLanguage].projectPhaseStatus}
+    </div>
+
+    {/* GREEN — FINISHED */}
     <div className="flex items-center gap-2 mb-1">
-      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#22C55E" }} />
+      <span
+        className="inline-block w-3 h-3 rounded-sm"
+        style={{ backgroundColor: "#22C55E" }}
+      />
       <span>{translations[selectedLanguage].finished}</span>
     </div>
 
+    {/* YELLOW — IN PROGRESS */}
     <div className="flex items-center gap-2 mb-1">
-      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#EAB308" }} />
+      <span
+        className="inline-block w-3 h-3 rounded-sm"
+        style={{ backgroundColor: "#F7D774" }}
+      />
       <span>{translations[selectedLanguage].inProgress}</span>
     </div>
 
+    {/* RED — PLANNED */}
     <div className="flex items-center gap-2">
-      <span className="inline-block w-3 h-3 rounded-sm" style={{ backgroundColor: "#e53935" }} />
+      <span
+        className="inline-block w-3 h-3 rounded-sm"
+        style={{ backgroundColor: "#e53935" }}
+      />
       <span>{translations[selectedLanguage].planned}</span>
     </div>
+
   </div>
 )}
 
-          {/* Tooltip */}
-          <AnimatePresence>
-            {hovered && !activeSegment && window.innerWidth >= 768 && (
-              <motion.div
-                key={hovered}
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-                transition={{ duration: 0.15 }}
-                className="absolute bg-black/80 text-white text-sm md:text-base font-medium px-4 py-2 rounded-lg shadow-lg pointer-events-none backdrop-blur-sm border border-white/10"
-                style={{
-                  top: "var(--mouse-y)",
-                  left: "var(--mouse-x)",
-                  transform: "translate(15px, 15px)",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {TABLE_DATA[hovered]?.naziv ?? hovered}
-              </motion.div>
-            )}
-          </AnimatePresence>
 
-          {/* Popup */}
-          {activeSegment && (
-            <SegmentPopup
-              segmentKey={activeSegment}
-              onClose={() => setActiveSegment(null)}
-              selectedLanguage={selectedLanguage}   // ⬅️ ovo dodaj
-            />
-          )}
+    {/* Tooltip */}
+    <AnimatePresence>
+      {hovered && !activeSegment && window.innerWidth >= 768 && (
+        <motion.div
+          key={hovered}
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -5 }}
+          transition={{ duration: 0.15 }}
+          className="absolute bg-black/80 text-white text-sm md:text-base font-medium px-4 py-2 rounded-lg shadow-lg pointer-events-none backdrop-blur-sm border border-white/10"
+          style={{
+            top: "var(--mouse-y)",
+            left: "var(--mouse-x)",
+            transform: "translate(15px, 15px)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          {TABLE_DATA[hovered]?.naziv ?? hovered}
+        </motion.div>
+      )}
+    </AnimatePresence>
 
-          {/* QR kod */}
-          <div className="absolute bottom-6 right-6 z-50 hidden md:block">
-            <QrCodeBox url="https://monteput-map.vercel.app/" />
-          </div>
-        </div>
-      </main>
+    {/* Popup */}
+    {activeSegment && (
+      <SegmentPopup
+        segmentKey={activeSegment}
+        onClose={() => setActiveSegment(null)}
+        selectedLanguage={selectedLanguage}
+      />
+    )}
+
+    {/* QR kod */}
+    <div className="absolute bottom-6 right-6 z-50 hidden md:block">
+      <QrCodeBox url="https://monteput-map.vercel.app/" />
+    </div>
+
+  </div>
+</main>
+
 
       {/* Legend Dialog */}
       {showLegendDialog && (

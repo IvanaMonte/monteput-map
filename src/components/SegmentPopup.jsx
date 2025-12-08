@@ -28,7 +28,7 @@ const getStatusBadgeColor = (statusRaw) => {
     v.includes("ongoing") ||
     v.includes("in progress")
   ) {
-    return "#EAB308";
+    return "#F7D774";
   }
 
   // 🔴 tender / planirano / planned
