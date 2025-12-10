@@ -326,7 +326,7 @@ export const TABLE_DATA_EN = {
     idejni: "—",
     glavni: "—",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgBpLbs8pSWaTreJOu7okvhzAQ-REf2bIs0U0lbO4qC1Zvc?e=S5uD10",
   },
   "A1-2": {
     oznaka: "2",
@@ -337,7 +337,7 @@ export const TABLE_DATA_EN = {
     idejni: "completed",
     glavni: "EBRD tender in progress",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgAjPUhH7Ek8RrL_MNL3LVlkAcMt6d2N4zUjuk2PhhrsqD8?e=JgbptW",
   },
   "A1-3": {
     oznaka: "3",
@@ -348,7 +348,7 @@ export const TABLE_DATA_EN = {
     idejni: "project preparation ongoing",
     glavni: "tender planned for 2026",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgA4IGo_yyrbSYHbl5a9Bz2_AbAH35tQ5mgsudN3nov3-Ho?e=eYWgNM",
   },
   "A1-4": {
     oznaka: "4",
@@ -359,7 +359,7 @@ export const TABLE_DATA_EN = {
     idejni: "project preparation ongoing",
     glavni: "tender planned 2026–2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgA4IGo_yyrbSYHbl5a9Bz2_AbAH35tQ5mgsudN3nov3-Ho?e=eYWgNM",
   },
   "A1-5": {
     oznaka: "5",
@@ -370,7 +370,7 @@ export const TABLE_DATA_EN = {
     idejni: "project preparation ongoing",
     glavni: "tender planned 2026",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgCxUyu6bexGSrRyJyypMlxbAVKTeY_G6JaSgLpSMy5IFK4?e=nB5boh",
   },
   "A1-6": {
     oznaka: "6",
@@ -381,7 +381,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender in progress",
     glavni: "tender planned 2026",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgBrDAQ_AaWIQJ6fiV7Kp2mIAWWcAe5BKkSINXYS6X5X-Fk?e=IjAJbZ",
   },
   "A1-7": {
     oznaka: "8",
@@ -392,7 +392,7 @@ export const TABLE_DATA_EN = {
     idejni: "project preparation ongoing",
     glavni: "tender planned 2026",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgBkgmfMZYEwRJDS3GRwzPGeAUx9isfpxNrvqzzhJ2_HAJQ?e=ZQxpKE",
   },
   "A2-1": {
     oznaka: "1",
@@ -403,7 +403,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgAK3sVm5_kDTZuQbYgP1wJCAZQ8tKZovhK0vF7jNXxJkwk?e=JnadAh",
   },
   "A2-2": {
     oznaka: "2",
@@ -414,7 +414,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgBcEpKjg7gGSqE_CvWQ9Le-AZ9ATfA_KLdsr6eRlq7qNXU?e=JHzlhe",
   },
   "A2-3": {
     oznaka: "3",
@@ -425,7 +425,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2028",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgCCyFVwmy5mSpOkcvKWv_ygAfvxO_Df-eu-KWIw-hZ1R8g?e=2fcBGq",
   },
   "A2-4": {
     oznaka: "4",
@@ -436,7 +436,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgBfTIotF3nXS4Oc50IkOadaASKkgLoOleQkXPtAgJesXMA?e=pw62yS",
   },
   "B1-1": {
     oznaka: "1",
@@ -447,7 +447,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2026–2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgDw0IJPOtEATaMecFLGsTP6Af8VlBI4kflZF3OGd50OkMg?e=UTF83f",
   },
   "B1-2": {
     oznaka: "2",
@@ -458,7 +458,7 @@ export const TABLE_DATA_EN = {
     idejni: "—",
     glavni: "tender in progress",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgDZlKcs507tQKPdxcFqJOnrAShB9JLz3VOcfqHb-Ta3bLo?e=eG1o9N",
   },
   "B1-3": {
     oznaka: "3",
@@ -469,7 +469,7 @@ export const TABLE_DATA_EN = {
     idejni: "—",
     glavni: "—",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgASdiabQasrT6kFsFBAa4LQARXzPP389buxw7IOqfJvjy8?e=5P5vZM",
   },
     "B1-4": {
     oznaka: "4",
@@ -480,7 +480,7 @@ export const TABLE_DATA_EN = {
     idejni: "—",
     glavni: "—",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgD2_3evCh57RITGnispeS8zAdm-MVxKik-ehraTc6dcp2o?e=jFgKYo",
   },
   "B2-1": {
     oznaka: "1",
@@ -491,7 +491,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2028",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgD49rt3GexpTIt-w9ZL3CLMAV6fGU8EbZrJ7_8PRQ3BWfA?e=dlMqTt",
   },
   "B2-2": {
     oznaka: "2",
@@ -502,7 +502,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2029",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+     pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgAcu3-q0u10Q5l169beuD8YASkj7XyntJEMh2k9IlHXA-c?e=0p8dsY",
   },
   "B3-1": {
     oznaka: "1",
@@ -513,7 +513,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025–2026",
     glavni: "tender planned 2028",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgDQJC8ERvhlTrweFsKoXG7ZAUH5WTGL2I90wxWKLD9OM2Q?e=s1s6uC",
   },
   "B4-1": {
     oznaka: "1",
@@ -524,7 +524,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2026",
     glavni: "tender planned 2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgCTFRSJn7WpRrqWMgyq3ylbAZvZBCZr2zCyDi_xeaXNodo?e=EQfiQI",
   },
   "B4-2": {
     oznaka: "2",
@@ -535,7 +535,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2026",
     glavni: "tender planned 2027",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgAKv6nnthcfSqvQE5fk0qLjAQ3x1JmWQPf7xk2CFngWWKU?e=zBFkrE",
   },
   "B4-3": {
     oznaka: "3",
@@ -546,7 +546,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2026",
     glavni: "tender planned 2029",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgD24ZW2mq_MSKK6fTBy9GkNARG7ueNw_sJudYOOmbH54GI?e=Aakhfm",
   },
   "B4-4": {
     oznaka: "4",
@@ -557,7 +557,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2026",
     glavni: "tender planned 2029",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgBF-Ifvt-mrQ6zL1s7KaabJAbHOXY6qnssD1DECBUqC82k?e=at1Zux",
   },
   "B4-5": {
     oznaka: "5",
@@ -568,7 +568,7 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2026",
     glavni: "tender planned 2029",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://1drv.ms/b/c/cbeb7dbbf53cf90a/ER9jY146JcFAtHvzZOKmbVcBrHNMf6YUC2HRR5tszCs0ow?e=dOoSwv",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgDaOUSpRFFHQJTi0VxwmuS3Aa0RSkOJyeEIx7Z9Pvxc300?e=spwIbZ",
   },
   "B5-1": {
     oznaka: "1",
@@ -579,6 +579,6 @@ export const TABLE_DATA_EN = {
     idejni: "tender planned 2025",
     glavni: "tender planned 2029",
     video: "https://www.youtube.com/watch?v=Kf1kuvK3a4A",
-    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgAGnmv9L7cISLjqz4uKLl3ZAZ9WPcgoGvpil7JVbc_iRD8?e=vcfbvz",
+    pdf: "https://monteputmne-my.sharepoint.com/:f:/g/personal/gligor_boskovic_monteput_me/IgAGnmv9L7cISLjqz4uKLl3ZAZ9WPcgoGvpil7JVbc_iRD8?e=yeVBTK",
   },
 };

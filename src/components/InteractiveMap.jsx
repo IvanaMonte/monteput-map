@@ -92,13 +92,13 @@ const getPhaseStatusColor = (segmentKey) => {
     const width = window.innerWidth;
     if (width < 768) {
       // 📱 mobilni: veća početna vrijednost jer je ekran mali
-      return { MIN_ZOOM: 2.5, MAX_ZOOM: 3.0 };
+      return { MIN_ZOOM: 2.5, MAX_ZOOM: 9.0 };
     } else if (width < 1440) {
       // 💻 laptop / tablet
-      return { MIN_ZOOM: 1.4, MAX_ZOOM: 2.0 };
+      return { MIN_ZOOM: 1.4, MAX_ZOOM: 6.0 };
     } else {
       // 🖥️ veliki ekrani
-      return { MIN_ZOOM: 1.2, MAX_ZOOM: 1.0 };
+      return { MIN_ZOOM: 1.2, MAX_ZOOM: 2.5 };
     }
   };
 
